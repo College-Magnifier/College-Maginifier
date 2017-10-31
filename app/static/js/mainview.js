@@ -24,6 +24,7 @@ vis.mainview = function(){
 		if (!arguments.length) return data;
 		data = _.data;
 		header = _.header;
+		otherInfo = _.other_info;
 		return mainview;
 	};
 
@@ -74,9 +75,10 @@ vis.mainview = function(){
 
 		//xAxis & yAxis
 		xAxis = d3.axisBottom(x)
-				.tickFormat(d3.format("d"))
+				.tickFormat(d => otherInfo.type_abbr_map[header[d]])
 				.ticks(data[0].ranks.length)
 				.tickSize(0);
+
 		yAxis = d3.axisLeft(y)
 				.ticks()
 				.tickSize(0)
@@ -86,7 +88,7 @@ vis.mainview = function(){
 		voronoi = d3.voronoi()
 				.x(d => x(d.type))
 				.y(d => y(d.rank))
-				.extent([[- margin.left / 2, - margin.top / 2], [size[0] + margin.right / 2, size[1] + margin.bottom / 2]]);
+				.extent([[margin.left + 9 * axisMargin, margin.top + axisMargin], [size[0] - margin.right, size[1] - margin.bottom]]);
 
 		return mainview;
 	};
@@ -102,9 +104,9 @@ vis.mainview = function(){
 		//x-Axis
 		var xGroup = svg.append("g");
     var xAxisElem = xGroup.append("g")
-      .attr("transform", "translate(" + [0, 0] + ")")
+      .attr("transform", "translate(" + [10, 0] + ")")
       .attr("class", "x-axis")
-      .call(xAxis);
+			.call(xAxis)
 
 		//vertical grid line
     xGroup.append("g").selectAll("line")
@@ -117,16 +119,18 @@ vis.mainview = function(){
       	.attr("x2", d => x(d));
 
 		//y-Axis
-    var yGroup = svg.append("g")
-		for (var i = 0; i < data.length; i++){
-			yGroup.append("text")
-				.attr("x", 0)
-				.attr("y", y(data[i].ranks[0].rank))
-				.style('fill', "#555")
-				.style('font-size', '10px')
-				.style('font-weight', 'bold')
-				.text(data[i].Name);
-		}
+    var yGroup = svg.append("g");
+	  (function(){
+			for (var i = 0; i < data.length; i++){
+				yGroup.append("text")
+					.attr("id", "u" + nameMapId[data[i].Name])
+					.attr("x", 0)
+					.attr("y", y(data[i].ranks[0].rank))
+					.style('fill', "#555")
+					.style('font-size', '10px')
+					.style('font-weight', 'bold')
+					.text(data[i].Name);
+		 }})()
 
 		//render rank lines
 	  var lines = svg.append("g")
@@ -197,7 +201,7 @@ vis.mainview = function(){
       	.each(d => d.line.parentNode.appendChild(d.line));
 
 		return mainview.update();
-		
+
 	};
 
 	//update the graph
@@ -233,19 +237,55 @@ vis.mainview = function(){
 
 	 //mouseover interaction
 	 function mouseover(d) {
+
+		 //update line
 		 svg.selectAll(".rank-line").style("opacity", 0.1);
 		 changeOpacity(nameMapId[d.data.Name], 1);
+
+		 //update tooltip
 		 tooltip.attr("transform", "translate(" + x(d.data.type) + "," + y(d.data.rank) + ")")
 			 .style("fill", color(d.data.Name))
+
 		 tooltip.select("text").text(d.data.Name + " - " + d.data.rank)
 			 .attr("text-anchor", d.data.type == x.domain()[0] ? "start" : "middle")
-			 .attr("dx", d.data.type == x.domain()[0] ? -10 : 0)
+			 .attr("dx", d.data.type == x.domain()[0] ? -10 : (d.data.type == x.domain()[1] ? -8 * header[d.data.type].length : 0))
+			 .attr("dy", d.data.rank == 1 ? 40 : 0)
+
+		 //update x-axis
+		 svg.select(".x-axis").append("rect")
+			 .attr("x", x(d.data.type) - 9 * header[d.data.type].length / 2)
+			 .attr("y", 0)
+			 .attr("width", 9 * header[d.data.type].length)
+			 .attr("height", 20)
+			 .style("fill", "white");
+
+		 svg.select(".x-axis").append("text")
+			 .text(header[d.data.type])
+			 .attr("class", "tmpText")
+			 .attr("x", x(d.data.type))
+			 .attr("y", 14)
+			 .attr("font-size", 20)
+			 .attr("fill","steelblue")
+
+		 //update y-axis
+		 svg.select("#u" + nameMapId[d.data.Name]).style("fill", color(d.data.Name));
 	 }
 
 	 //mouseout interaction
 	 function mouseout(d) {
+
+		 //unhighlight line
 		 changeOpacity(nameMapId[d.data.Name], 0.1);
+
+		 //remove tooltip
 		 tooltip.attr("transform", "translate(-100,-100)");
+
+		 //reduct x-axis
+		 svg.select(".x-axis").selectAll("rect").remove();
+		 svg.select(".x-axis").select(".tmpText").remove();
+
+		 //update y-axis
+		 svg.select("#u" + nameMapId[d.data.Name]).style("fill", "#555");
 	 }
 
 	return mainview;
