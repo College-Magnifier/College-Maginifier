@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>College Magnifier</title>
+		<link type="text/css" rel="stylesheet" href="lib/jquery-ui/jquery-ui.min.css"/>
+		<link type="text/css" rel="stylesheet" href="css/style.css"/>
+
+		<script type="text/javascript" src="lib/d3/d3.v4.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery-1.10.1.min.js"></script>
+		<script type="text/javascript" src="lib/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="lib/colorbrewer/colorbrewer.js"></script>
+	</head>
+	<body>
+		<div id = "head">
+			<h>College Magnifier</h>
+		</div>
+		<div style="width: 90%; height: 900px; margin: 0 auto;">
+			<div style="width: 25%; height: 100%; float: left;">
+				<div style="width: 100%; height: 33%; position:relative; margin: 4px;">
+					<div class="toolbar ui-widget-header ui-corner-all">
+						<label class="toolbar_label">Overview</label>
+					</div>
+					<div id="overview" class="ui-widget-content ui-corner-all no_selection"></div>
+				</div>
+				<div style="width: 100%; height: 67%; position: relative; margin: 4px">
+					<div class="toolbar ui-widget-header ui-corner-all">
+						<label class="toolbar_label">Vertical view</label>
+					</div>
+					<div id="vview" class="ui-widget-content ui-corner-all no_selection"></div>
+				</div>
+				</div>
+			<div style="width: 74%; height: 100%; float: right;">
+				<div style="width: 100%; height: 70%; margin: 4px; position: relative">
+					<div class="toolbar ui-widget-header ui-corner-all">
+						<label class="toolbar_label">MainView</label>
+						<span class="toolbar_label ui-widget" style="float: right;">
+								Dataset:
+								<select id="dataset" onchange="display()">
+								</select>
+						</span>
+					</div>
+					<div id="mainview" style="margin-top:2px; overflow:scroll" class="ui-widget-content ui-corner-all no_selection"></div>
+				</div>
+				<div style="width: 100%; height: 30%; margin: 4px; position: relative">
+					<div class="toolbar ui-widget-header ui-corner-all">
+						<label class="toolbar_label">Horizental View</label>
+					</div>
+  				<div id="hview" class="ui-widget-content ui-corner-all no_selection"></div>
+				</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="js/vis.js"></script>
+		<script type="text/javascript" src="js/mainview.js"></script>
+		<script type="text/javascript" src="js/overview.js"></script>
+		<script type="text/javascript" src="js/hview.js"></script>
+		<script type="text/javascript" src="js/vview.js"></script>
+		<script type="text/javascript" src="js/driver.js"></script>
+		<br>
+		<br>
+		<footer class="central footer"> &copy; 2017 - Hanfei Lin - Zhuo Li - Han Yin - CS519 - UIUC</footer>
+	</body>
+</html>
