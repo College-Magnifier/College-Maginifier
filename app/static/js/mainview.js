@@ -37,6 +37,9 @@ vis.mainview = function(){
 			xAxis = null,
 			yAxis = null,
 			line = null,
+			voronoi = null,
+			svg = null,
+			tooltip = null,
 			nameMapId = {};
 			color = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -79,13 +82,19 @@ vis.mainview = function(){
 				.tickSize(0)
 				.tickValues(calRankRange())
 
+		//voronoi interaction
+		voronoi = d3.voronoi()
+				.x(d => x(d.type))
+				.y(d => y(d.rank))
+				.extent([[- margin.left / 2, - margin.top / 2], [size[0] + margin.right / 2, size[1] + margin.bottom / 2]]);
+
 		return mainview;
 	};
 
 	//render the graph
 	mainview.render = function() {
 
-		var svg = container.append("svg")
+		svg = container.append("svg")
 			.attr("width", size[0] - margin.left - margin.right)
 			.attr("height", size[1] - margin.top - margin.bottom)
 			.append("g").attr("transform", "translate(" + 0 + "," + margin.top + ")");
@@ -132,12 +141,6 @@ vis.mainview = function(){
 	      .style("stroke", d => color(d.Name))
 	      .style("stroke-width", 6)
 	      .style("opacity", 0.1)
-				.on("mouseover", function(d){
-					changeOpacity(nameMapId[d.Name], 1);
-				})
-				.on("mouseout", function(d){
-					changeOpacity(nameMapId[d.Name], 0.1);
-				})
 
 		var startDots = svg.append("g")
 				.selectAll("circle")
@@ -152,12 +155,6 @@ vis.mainview = function(){
 				.attr("r", 8)
 				.style("fill", d => color(d.Name))
 				.style("opacity", 0.1)
-				.on("mouseover", function(d){
-					changeOpacity(nameMapId[d.Name], 1);
-				})
-				.on("mouseout", function(d){
-					changeOpacity(nameMapId[d.Name], 0.1);
-				})
 
 		var endDots = svg.append("g")
 	      .selectAll("circle")
@@ -172,22 +169,41 @@ vis.mainview = function(){
 	      .attr("r", 8)
 	      .style("fill", d => color(d.Name))
 	      .style("opacity", 0.1)
-				.on("mouseover", function(d){
-					changeOpacity(nameMapId[d.Name], 1);
-				})
-				.on("mouseout", function(d){
-					changeOpacity(nameMapId[d.Name], 0.1);
-				})
 
+		//tooltip
+		tooltip = svg.append("g")
+			  .attr("transform", "translate(-100, -100)")
+				.attr("class", "tooltip");
 
-			return mainview.update();
+		tooltip.append("circle")
+				.attr("r", 8);
+
+		tooltip.append("text")
+				.attr("class", "name")
+				.attr("y", -20);
+
+		//interaction: use voronoi graph to seperate mouse domain
+		var voronoiGroup = svg.append("g")
+			.attr("class", "voronoi");
+
+		voronoiGroup.selectAll("path")
+			.data(voronoi.polygons(d3.merge(data.map(d => d.ranks))))
+			.enter().append("path")
+				.attr("d", function(d) { return d ? "M" + d.join("L") + "Z" : null; })
+				.on("mouseover", mouseover)
+				.on("mouseout", mouseout);
+
+		svg.selectAll(".rank-line")
+      	.each(d => d.line.parentNode.appendChild(d.line));
+
+		return mainview.update();
+		
 	};
 
 	//update the graph
 	mainview.update = function() {
 		return mainview;
 	};
-
 
 	///////////////////////////////////////////////////
 	// Private Functions
@@ -213,6 +229,23 @@ vis.mainview = function(){
 		 container.select("#s" + id).style("opacity", opa);
 		 container.select("#l" + id).style("opacity", opa);
 		 container.select("#e" + id).style("opacity", opa);
+	 }
+
+	 //mouseover interaction
+	 function mouseover(d) {
+		 svg.selectAll(".rank-line").style("opacity", 0.1);
+		 changeOpacity(nameMapId[d.data.Name], 1);
+		 tooltip.attr("transform", "translate(" + x(d.data.type) + "," + y(d.data.rank) + ")")
+			 .style("fill", color(d.data.Name))
+		 tooltip.select("text").text(d.data.Name + " - " + d.data.rank)
+			 .attr("text-anchor", d.data.type == x.domain()[0] ? "start" : "middle")
+			 .attr("dx", d.data.type == x.domain()[0] ? -10 : 0)
+	 }
+
+	 //mouseout interaction
+	 function mouseout(d) {
+		 changeOpacity(nameMapId[d.data.Name], 0.1);
+		 tooltip.attr("transform", "translate(-100,-100)");
 	 }
 
 	return mainview;

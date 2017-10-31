@@ -51,7 +51,8 @@ def _data(dataname):
 					if value != "N":
 						obj = {
 							"type" : index,
-							"rank" : int(value)
+							"rank" : int(value),
+							"Name" : university["Name"]
 							}
 						ranks.append(obj)
 				index += 1
