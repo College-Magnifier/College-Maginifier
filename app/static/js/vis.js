@@ -8,6 +8,6 @@
 
 // the singleton
 vis = function() {
-	var vis = {};
-	return vis;
+  var vis = {};
+  return vis;
 }();
