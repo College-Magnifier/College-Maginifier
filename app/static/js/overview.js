@@ -76,8 +76,6 @@ function renderMap(scale) {
     success: function(resp) {
       data = JSON.parse(resp);
 
-      console.log(data);
-
       $('#overview').highcharts('Map', {
         title: { text: '' },
         mapNavigation: {
@@ -94,6 +92,7 @@ function renderMap(scale) {
         series: [ {
           data: data,
           mapData: Highcharts.maps['custom/' + scale],
+          borderColor: 'white',
           name: 'Total Colleges',
           states: {
             hover: {
@@ -101,7 +100,7 @@ function renderMap(scale) {
             }
           },
           dataLabels: {
-            enabled: true,
+            enabled: false,
             format: '{point.name}'
           },
           pointer: 'cursor',
