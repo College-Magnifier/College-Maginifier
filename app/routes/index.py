@@ -60,47 +60,33 @@ def _list():
 @app.route('/data/<dataname>')
 def _data(dataname):
     # data preprocessing
-    fpath = 'app/data/' + dataname
-    data = []
-    final_data = {}
-    header = []
-    top = 10
+	type_rank = {}
 
-    with open(fpath,'rU') as f:
-        reader = unicodecsv.reader(f,encoding='utf-8-sig')
-        header = reader.next()
+	fpath = 'app/data/' + dataname
+	with open(fpath) as f:
+		dataset = json.load(f)
+		for univ in dataset["data"]:
+			years = {}
+			for item in univ["scores"]:
+				year = item["year"]
+				years[year] = item["detail"]
+				if not type_rank.has_key(year):
+					type_rank[year] = {}
+				for detail in years[year]:
+					if type_rank[year].has_key(detail["type"]):
+						type_rank[year][detail["type"]].append(detail["score"])
+					else:
+						type_rank[year][detail["type"]] = []
+						type_rank[year][detail["type"]].append(detail["score"])
+			univ["scores"] = years
 
-        for row in reader:
-            university = {}
-            ranks = []
-            index = 0
-            for value in row:
-                if header[index] == "Name":
-                     university["Name"] = value
-                elif header[index] == "Country":
-                     university["Country"] = value
-                elif header[index] == "Location":
-                     university["Location"] = value
-                else:
+		for year in type_rank:
+			for type in type_rank[year]:
+				type_rank[year][type].sort(reverse = True)
 
-                    if value != "N":
-                        obj = {
-                            "type" : index,
-                            "rank" : int(value),
-                            "Name" : university["Name"]
-                            }
-                        ranks.append(obj)
-                index += 1
+		for univ in dataset["data"]:
+			for item in univ["scores"]:
+				for detail in univ["scores"][item]:
+					detail["rank"] = type_rank[item][detail["type"]].index(detail["score"])
 
-            university["ranks"] = ranks
-            data.append(university)
-
-        data = data[0 : top]
-
-        final_data["header"] = header
-        final_data["data"] = data
-        final_data["other_info"] = {
-            "type_abbr_map" : type_abbr_map,
-        }
-
-    return json.dumps(final_data)
+	return json.dumps(dataset)

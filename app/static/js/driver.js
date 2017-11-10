@@ -17,7 +17,7 @@ $(document).ready(function() {
     d = $.parseJSON(d);
     d.forEach(function(name) {
       $('#dataset').append(
-        '<option>' + name.substring(0, name.length - 4) + '</option>'
+        '<option>' + name.substring(0, name.indexOf(".")) + '</option>'
       );
     });
 
@@ -38,7 +38,7 @@ function display() {
     return;
   }
 
-  var url = 'data/' + $('#dataset').val() + '.csv';
+  var url = 'data/' + $('#dataset').val() + '.JSON';
 
   d3.json(url, function(error, json) {
     if (error) {
