@@ -68,52 +68,63 @@
 //   return overview;
 // };
 
+function renderMap(scale) {
+  $.ajax({
+    method: 'GET',
+    url: '/map_data/school_distribution',
+    data: { scale: scale },
+    success: function(resp) {
+      data = JSON.parse(resp);
 
+      console.log(data);
 
-var data = [
-  [ 'eu', 0 ],
-  [ 'oc', 1 ],
-  [ 'af', 2 ],
-  [ 'as', 3 ],
-  [ 'na', 4 ],
-  [ 'sa', 5 ]
-];
+      $('#overview').highcharts('Map', {
+        title: { text: '' },
+        mapNavigation: {
+          enabled: true,
+          buttonOptions: {
+            verticalAlign: 'bottom'
+          }
+        },
 
-Highcharts.mapChart('overview', {
-  chart: {
-    map: 'custom/world-continents'
-  },
+        colorAxis: {
+          min: 0
+        },
 
-  title: {
-    text: ''
-  },
+        series: [ {
+          data: data,
+          mapData: Highcharts.maps['custom/' + scale],
+          name: 'Total Colleges',
+          states: {
+            hover: {
+              color: '#BADA55'
+            }
+          },
+          dataLabels: {
+            enabled: true,
+            format: '{point.name}'
+          },
+          pointer: 'cursor',
+          point: {
+            events: {
+              click: function() {
+                console.log(this.name);
+                switch (this.name) {
+                case 'Asia':
+                  renderMap('asia');
+                  break;
+                }
+              }
+            }
+          }
+        } ],
 
-  mapNavigation: {
-    enabled: true,
-    buttonOptions: {
-      verticalAlign: 'bottom'
+        credits: {
+          enabled: false
+        }
+      });
     }
-  },
+  });
+}
 
-  colorAxis: {
-    min: 0
-  },
-
-  series: [ {
-    data: data,
-    name: 'Random data',
-    states: {
-      hover: {
-        color: '#BADA55'
-      }
-    },
-    dataLabels: {
-      enabled: true,
-      format: '{point.name}'
-    }
-  } ],
-
-  credits: {
-    enabled: false
-  }
-});
+renderMap('world-continents');

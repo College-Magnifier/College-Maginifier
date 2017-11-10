@@ -34,6 +34,10 @@ type_abbr_map = {
     "Space Science" : "SS"
 }
 
+def load_map_json_data(filename):
+    json_url = os.path.join(app.root_path, 'data/map/' + filename + '.json')
+    return json.load(open(json_url))
+
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
@@ -43,10 +47,6 @@ def get_continents_school():
     map_scale = request.args['scale']
     data = load_map_json_data(map_scale);
     return json.dumps(data)
-
-def load_map_json_data(filename):
-    json_url = os.path.join(app.root_path, 'data/map/' + filename + '.json')
-    return json.load(open(json_url))
 
 @app.route('/list')
 def _list():
