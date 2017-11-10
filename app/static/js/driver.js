@@ -5,7 +5,7 @@
 */
 
 var mainview = vis.mainview();
-var overview = vis.overview();
+// var overview = vis.overview();
 var vview = vis.vview();
 var hview = vis.hview();
 

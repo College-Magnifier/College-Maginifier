@@ -2,6 +2,65 @@
 Author : Hanfei Lin
 Date: 10/14/2017
 */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+nav .nav-wrapper {
+  margin: 0 30px;
+}
+
+body .content {
+  margin: 15px 15px;
+}
+
+footer.page-footer {
+  padding: 0;
+  text-align: center;
+}
+
+.subpanel {
+  position: relative;
+  width: 100%;
+}
+
+.subpanel .subpanel-title {
+  height: 40px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+}
+
+.subpanel .subpanel-title label {
+  font-size: 20px;
+  margin: 0 5px;
+}
+
+.subpanel .subpanel-content {
+  border: 1px solid #c5c5c5;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding: 10px;
+}
+
+#overview {
+  height: 300px;
+}
+#vview {
+  height: 600px;
+}
+#mainview {
+  height: 650px;
+  overflow: scroll;
+  width: 100%;
+}
+#hview {
+  height: 250px;
+}
 
 /* main html */
 .central {
@@ -55,54 +114,12 @@ div.no_selection {
     display: inline-block;
 }
 
-#mainview {
-    text-align: center;
-    width: inherit;
-    padding: 0 4px 0 4px;
-    position: absolute;
-    top: 33px;
-    bottom: 0px;
-}
-
-#mainview svg{
-	background-color: white;
-}
-
-#overview {
-    text-align: center;
-    width: inherit;
-    padding: 0 4px 0 4px;
-    margin: 2px 0 2px 0;
-    position: absolute;
-    top: 35px;
-    bottom: 0px;
-    overflow: scroll;
-}
-
 #levelview {
     text-align: center;
     width: inherit;
     height: 37.5%;
     padding: 0 4px 0 4px;
     margin: 2px 0 2px 0;
-}
-
-#vview {
-    width: inherit;
-    position: absolute;
-    top: 35px;
-    bottom: 0px;
-    padding: 4px;
-}
-
-#hview {
-    margin-top: 2px;
-    width: inherit;
-    overflow: scroll;
-    padding: 0 4px 0 4px;
-    position: absolute;
-    top: 33px;
-    bottom: 0px;
 }
 
 #stateaxis-x,
