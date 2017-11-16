@@ -6,7 +6,14 @@ import codecs
 
 from app import app
 from flask import Flask, request
+from flaskext.mysql import MySQL
 
+mysql = MySQL()
+app.config['MYSQL_DATABASE_USER'] = 'coni_admin'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'admin'
+app.config['MYSQL_DATABASE_DB'] = 'coni_db'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
 
 debug = False
 
@@ -22,6 +29,13 @@ def root():
 def get_continents_school():
     map_scale = request.args['scale']
     data = load_map_json_data(map_scale);
+    return json.dumps(data)
+
+@app.route('/test')
+def test_api():
+    cursor = mysql.connect().cursor()
+    cursor.execute("SELECT * from university_subjects")
+    data = cursor.fetchall()
     return json.dumps(data)
 
 @app.route('/data/<dataname>')
