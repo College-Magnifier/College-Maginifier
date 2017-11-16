@@ -54,12 +54,12 @@ footer.page-footer {
   height: 600px;
 }
 #mainview {
-  height: 650px;
+  height: 600px;
   overflow: scroll;
   width: 100%;
 }
 #hview {
-  height: 250px;
+  height: 300px;
 }
 
 /* main html */
@@ -139,7 +139,7 @@ div.no_selection {
 /* brush */
 .brush .extent {
   stroke: black;
-  fill-opacity: .125;
+  fill-opacity: .6;
   shape-rendering: crispEdges;
 }
 

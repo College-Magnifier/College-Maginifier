@@ -35,6 +35,7 @@ vis.hview = function() {
   // Private Parameters
 
   ///////////////////////////////////////////////////
+
   // Public Function
   hview.layout = function() {
 
@@ -42,6 +43,36 @@ vis.hview = function() {
   };
 
   hview.render = function() {
+
+    var color = d3.scale.linear()
+      .domain([200, 1])
+      .range(["#E6EAF3", "#133494"])
+      .interpolate(d3.interpolateLab);
+
+    parcoords = d3.parcoords()(container[0][0])
+        .color(function(d, i) {
+            return color(d['id']);
+            // return "#87B2ED"
+        })
+        .alpha(0.2)
+
+    console.log(data)
+
+    parcoords
+        .data(data)
+        .hideAxis(["university", "id"])
+        .rate(150)
+        .composite("darker")
+        .mode("queue")
+        .render()
+        .shadows()
+        .reorderable()
+        .brushMode("1D-axes")
+        .on("brushend", function(items) {
+            console.log(items)
+        })
+        .reorderable()
+        .interactive();
 
     return hview.update();
   };

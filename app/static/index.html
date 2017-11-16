@@ -1,103 +1,102 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>College Magnifier</title>
-    <link type="text/css" rel="stylesheet" href="lib/jquery-ui/jquery-ui.min.css" />
-    <link type="text/css" rel="stylesheet" href="lib/materialize/materialize.min.css" />
-    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
-    <link type="text/css" rel="stylesheet" href="css/style.css" />
-  </head>
-  <body>
-    <nav>
-      <div class="nav-wrapper">
-        <a href="#" class="brand-logo">College Magnifier</a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="/">Visualization</a></li>
-          <li><a href="/data">Data</a></li>
-          <li><a href="/about">About</a></li>
-        </ul>
-      </div>
-    </nav>
+<head>
+  <title>College Magnifier</title>
+  <link type="text/css" rel="stylesheet" href="lib/jquery-ui/jquery-ui.min.css" />
+  <link type="text/css" rel="stylesheet" href="lib/materialize/materialize.min.css" />
+  <link type="text/css" rel="stylesheet" href="lib/parcoords/d3.parcoords.css" />
+  <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 
-    <div class="content row">
-      <div class="col s4">
-        <div class="row">
-          <div class="subpanel">
-            <div class="subpanel-title grey">
-              <i class="material-icons white-text">public</i>
-              <label class="white-text">
-                Overview
+  <link type="text/css" rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <nav class = "blue-grey darken-3">
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo ">College Magnifier</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="/">Visualization</a></li>
+        <li><a href="/data">Data</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="content row">
+    <div class="col s4">
+      <div class="row">
+        <div class="subpanel">
+          <div class="subpanel-title blue-grey darken-1">
+            <i class="material-icons white-text">public</i>
+            <label class="white-text">
+                Step 1 - Location Filter
               </label>
-            </div>
-            <div id="overview" class="subpanel-content"></div>
           </div>
-        </div>
-        <div class="row">
-          <div class="subpanel">
-            <div class="subpanel-title grey">
-              <i class="material-icons white-text">format_list_bulleted</i>
-              <label class="white-text">
-                Statistics
-              </label>
-            </div>
-            <div id="vview" class="subpanel-content"></div>
-          </div>
+          <div id="overview" class="subpanel-content"></div>
         </div>
       </div>
-      <div class="col s8">
-        <div class="row">
-            <div class="subpanel">
-              <div class="subpanel-title grey">
-                <i class="material-icons white-text">multiline_chart</i>
-                <label class="white-text">
-                  Score Rankings
-                </label>
-              </div>
-              <div class="subpanel-content">
-                <span class="toolbar_label ui-widget" style="float: right;">
-                    Dataset:
-                    <select id="dataset" onchange="display()">
-                    </select>
-                </span>
-                <div id="mainview"></div>
-              </div>
-            </div>
-        </div>
-        <div class="row">
-          <div class="subpanel">
-            <div class="subpanel-title grey">
-              <i class="material-icons white-text">school</i>
-              <label class="white-text">
-                Details
+      <div class="row">
+        <div class="subpanel">
+          <div class="subpanel-title blue-grey darken-1">
+            <i class="material-icons white-text">format_list_bulleted</i>
+            <label class="white-text">
+                College Infomation
               </label>
-            </div>
-            <div id="hview" class="subpanel-content"></div>
           </div>
+          <div id="vview" class="subpanel-content"></div>
         </div>
       </div>
     </div>
-
-    <footer class="page-footer">
-      <div class="footer-copyright">
-        <div class="container">
-        &copy; 2017 - Hanfei Lin - Zhuo Li - Han Yin - CS519 - UIUC
+    <div class="col s8">
+      <div class="row">
+        <div class="subpanel">
+          <div class="subpanel-title blue-grey darken-1">
+            <i class="material-icons white-text">school</i>
+            <label class="white-text">
+                Step 2 - Rank Filter
+              </label>
+          </div>
+          <div id="hview" class="subpanel-content parcoords"></div>
         </div>
       </div>
-    </footer>
+      <div class="row">
+        <div class="subpanel">
+          <div class="subpanel-title blue-grey darken-1">
+            <i class="material-icons white-text">multiline_chart</i>
+            <label class="white-text">
+                  Step 3 - Subject Magnifier
+                </label>
+          </div>
+          <div id="mainview" class="subpanel-content"></div>
+        </div>
+      </div>
 
-    <script type="text/javascript" src="lib/d3/d3.v4.js"></script>
-    <script type="text/javascript" src="lib/jquery/jquery-1.10.1.min.js"></script>
-    <script type="text/javascript" src="lib/materialize/materialize.min.js"></script>
-    <script type="text/javascript" src="lib/highmaps/highmaps.src.js"></script>
-    <script src="https://code.highcharts.com/mapdata/custom/world-continents.js"></script>
-    <script src="https://code.highcharts.com/mapdata/custom/asia.js"></script>
+    </div>
+  </div>
 
-    <script type="text/javascript" src="js/vis.js"></script>
-    <script type="text/javascript" src="js/mainview.js"></script>
-    <script type="text/javascript" src="js/overview.js"></script>
-    <script type="text/javascript" src="js/hview.js"></script>
-    <script type="text/javascript" src="js/vview.js"></script>
-    <script type="text/javascript" src="js/driver.js"></script>
-  </body>
+  <footer class="page-footer blue-grey darken-3">
+    <div class="footer-copyright">
+      <div class="container">
+        &copy; 2017 - Hanfei Lin - Zhuo Li - Han Yin - CS519 - UIUC
+      </div>
+    </div>
+  </footer>
+
+  <script type="text/javascript" src="lib/d3/d3.min.js"></script>
+  <script type="text/javascript" src="lib/jquery/jquery-1.10.1.min.js"></script>
+  <script type="text/javascript" src="lib/materialize/materialize.min.js"></script>
+  <script type="text/javascript" src="lib/highmaps/highmaps.src.js"></script>
+  <script type="text/javascript" src="lib/parcoords/d3.parcoords2.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/world-continents.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/asia.js"></script>
+
+  <script type="text/javascript" src="js/vis.js"></script>
+  <script type="text/javascript" src="js/mainview.js"></script>
+  <script type="text/javascript" src="js/overview.js"></script>
+  <script type="text/javascript" src="js/hview.js"></script>
+  <script type="text/javascript" src="js/vview.js"></script>
+  <script type="text/javascript" src="js/driver.js"></script>
+</body>
+
 </html>

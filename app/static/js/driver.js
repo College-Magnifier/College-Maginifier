@@ -11,19 +11,7 @@ var hview = vis.hview();
 
 // layout UI and setup events
 $(document).ready(function() {
-  // init data list
-  $.get('/list', function(d) {
-    $('#dataset').empty();
-    d = $.parseJSON(d);
-    d.forEach(function(name) {
-      $('#dataset').append(
-        '<option>' + name.substring(0, name.indexOf(".")) + '</option>'
-      );
-    });
-
-    display();
-  });
-
+  display();
   wire_views();
 });
 
@@ -32,23 +20,18 @@ $(document).ready(function() {
 
 function display() {
 
-  // load datasets
-  var data = $('#dataset').val();
-  if(!data || data == '') {
-    return;
-  }
-
-  var url = 'data/' + $('#dataset').val() + '.JSON';
+  var url = 'data/' + "overall.csv";
 
   d3.json(url, function(error, json) {
     if (error) {
       console.log(error);
       return;
     }
-
-    mainview.container(d3.select('#mainview')).data(json).layout().render();
-
+    hview.container(d3.select("#hview")).data(json).layout().render();
+    mainview.container(d3.select("#mainview")).data(json).layout().render();
   });
+
+
 }
 
 function wire_views() {
