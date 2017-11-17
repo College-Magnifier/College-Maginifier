@@ -30,7 +30,7 @@ vis.mainview = function() {
     if (!arguments.length) {
       return data;
     }
-    data = _.data;
+    data = _;
     return mainview;
   };
 
@@ -39,70 +39,23 @@ vis.mainview = function() {
   ///////////////////////////////////////////////////
   // Private Parameters
 
-  var dataTest = [
-    [120, ["like", "call response", "dramatic intro", "has breaks", "male vocalist", "silly", "swing"]],
-    [150, ["brassy", "like", "calm energy", "female vocalist", "swing", "fun"]],
-    [170, ["calm energy", "instrumental", "swing", "like", "happy"]],
-    [140, ["has breaks", "male vocalist", "swing", "piano", "banjo", "chill"]],
-    [160, ["calm energy", "instrumental", "swing", "like", "interesting"]],
-    [140, ["brassy", "like", "energy", "dramatic intro", "male vocalist", "baseball", "swing"]],
-    [170, ["instrumental", "interesting", "high energy", "like", "swing"]],
-    [140, ["instrumental", "energy", "like", "swing"]],
-    [200, ["instrumental", "brassy", "dramatic intro", "like", "swing"]],
-    [160, ["male vocalist", "brassy", "swing", "like", "my favorites"]],
-    [130, ["like", "interesting", "dramatic intro", "male vocalist", "silly", "swing", "gospel"]],
-    [160, ["like", "long intro", "announcer", "energy", "swing", "female vocalist"]],
-    [170, ["instrumental", "swing", "bass", "like"]],
-    [150, ["like", "interesting", "has breaks", "instrumental", "chunky", "swing", "banjo", "trumpet"]],
-    [170, ["like", "has breaks", "male vocalist", "silly", "swing", "banjo"]],
-    [190, ["instrumental", "banjo", "swing"]],
-    [130, ["instrumental", "brassy", "banjo", "like", "swing"]],
-    [160, ["brassy", "like", "energy", "instrumental", "big band", "jam", "swing"]],
-    [150, ["like", "male vocalist", "live", "swing", "piano", "banjo", "chill"]],
-    [150, ["like", "trick ending", "instrumental", "chunky", "swing", "chill"]],
-    [120, ["brassy", "like", "female vocalist", "swing", "chill", "energy buildup"]],
-    [150, ["brassy", "like", "interesting", "instrumental", "swing", "piano"]],
-    [190, ["brassy", "like", "long intro", "energy", "baseball", "swing", "female vocalist"]],
-    [180, ["calm energy", "female vocalist", "live", "like", "swing"]],
-    [200, ["banjo", "like", "long intro", "interesting", "energy", "my favorites", "male vocalist", "silly", "swing", "fun", "balboa"]],
-    [150, ["brassy", "calm energy", "chunky", "instrumental", "old-timey", "live", "swing"]],
-    [160, ["like", "call response", "interesting", "instrumental", "calm energy", "swing"]],
-    [180, ["interesting", "swing", "fast", "male vocalist"]],
-    [150, ["calm energy", "chunky", "swing", "female vocalist", "like"]],
-    [180, ["like", "has breaks", "male vocalist", "chunky", "silly", "swing"]],
-    [140, ["instrumental", "brassy", "dramatic intro", "swing", "chill"]],
-    [150, ["male vocalist", "trumpet", "like", "swing"]],
-    [150, ["instrumental", "energy", "like", "has breaks", "swing"]],
-    [180, ["brassy", "like", "energy", "has breaks", "instrumental", "has calm", "swing"]],
-    [150, ["female vocalist", "swing"]],
-    [170, ["instrumental", "brassy", "energy", "swing"]],
-    [170, ["calm energy", "instrumental", "energy", "like", "swing"]],
-    [190, ["brassy", "like", "instrumental", "high energy", "swing", "trumpet"]],
-    [160, ["male vocalist", "energy", "swing", "old-timey"]],
-    [170, ["like", "oldies", "my favorites", "fast", "male vocalist", "high energy", "swing"]]
-  ];
-
   var outer = d3.map(),
     inner = [],
-    links = [];
+    links = [],
+    subject = [];
 
   var link_width = "1px";
 
-  var colors = ["#a50026", "#d73027", "#f46d43", "#fdae61", "#fee090", "#ffffbf", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4", "#313695"]
-  var color = d3.scale.linear()
-    .domain([60, 220])
-    .range([colors.length - 1, 0])
-    .clamp(true);
+  var color20 = d3.scale.category20();
 
   var diameter = 700;
   var rect_width = 120;
-  var rect_height = (diameter - 150) / dataTest.length;
+  var rect_height = 0;
 
   var inner_y,
     outer_x,
     outer_y,
     bar_x;
-
 
   ///////////////////////////////////////////////////
   // Public Function
@@ -110,15 +63,22 @@ vis.mainview = function() {
   //calculate
   mainview.layout = function() {
 
+    outer = d3.map(),
+    inner = [],
+    links = [],
+    subject = [];
+
     size[0] = parseInt(container.style("width"));
     size[1] = parseInt(container.style("height"));
 
     diameter = size[1] - margin.top - margin.bottom;
 
+    rect_height = (diameter - 150) / data.length;
+
     var outerId = 0;
 
     //preprocessing
-    dataTest.forEach(function(d) {
+    data.forEach(function(d) {
 
       if (d == null)
         return;
@@ -126,7 +86,9 @@ vis.mainview = function() {
       //inner items
       innerItem = {
         id: 'i' + inner.length,
-        name: d[0],
+        abbr: d["abbr"],
+        university: d["university"],
+        subjects: d["subjects"],
         related_links: []
       };
 
@@ -134,24 +96,25 @@ vis.mainview = function() {
       inner.push(innerItem);
 
       //cast to array
-      if (!Array.isArray(d[1]))
-        d[1] = [d[1]];
+      if (!Array.isArray(d["subjects"]))
+        d["subjects"] = [d["subjects"]];
 
-      d[1].forEach(function(d1) {
+      d["subjects"].forEach(function(d1) {
 
-        //outer items
-        outerItem = outer.get(d1);
+        outerItem = outer.get(d1["subject"]);
 
         if (outerItem == null) {
+
           outerItem = {
-            name: d1,
+            name: d1["subject"],
+            type: d1["type"],
             id: 'o' + outerId,
             related_links: []
           };
 
           outerItem.related_nodes = [outerItem.id];
           outerId = outerId + 1;
-          outer.set(d1, outerItem);
+          outer.set(d1["subject"], outerItem);
         }
 
         // create the links
@@ -170,62 +133,64 @@ vis.mainview = function() {
       });
     });
 
-    dataTest = {
+    data = {
       inner: inner,
       outer: outer.values(),
       links: links
     }
 
     //reorder outerItems
-    outer = dataTest.outer;
-    dataTest.outer = Array(outer.length);
+    outer = data.outer;
+    data.outer = Array(outer.length);
 
     var i1 = 0;
     var i2 = outer.length - 1;
 
-    for (var i = 0; i < dataTest.outer.length; ++i) {
-      if (i % 2 == 1)
-        dataTest.outer[i2--] = outer[i];
-      else
-        dataTest.outer[i1++] = outer[i];
-    }
+    outer.sort(createCompareFunction("type"));
+
+    outer.forEach(function(d) {
+      if (subject.hasOwnProperty(d["type"])) {
+        if (subject[d["type"]].indexOf(d["name"]) < 0) {
+          subject[d["type"]].push(d["name"]);
+        }
+      } else {
+        subject[d["type"]] = [];
+        subject[d["type"]].push(d["name"]);
+      }
+    })
+
+    data.outer = outer;
 
     //
-    var il = dataTest.inner.length;
-    var ol = dataTest.outer.length;
+    var il = data.inner.length;
+    var ol = data.outer.length;
 
     //scale
-    inner_y = d3.scale.linear()
-      .domain([0, il])
-      .range([-(il * rect_height) / 2, (il * rect_height) / 2]);
+    inner_y = d3.scale.linear().domain([0, il]).range([ -(il * rect_height) / 2,
+      (il * rect_height) / 2
+    ]);
 
-    outer_x = d3.scale.linear()
-      .domain([0, dataTest.outer.length])
-      .range([200, 340]);
+    outer_x = d3.scale.linear().domain([0, data.outer.length]).range([200, 340]);
 
-    outer_y = d3.scale.linear()
-      .domain([0, dataTest.outer.length])
-      .range([0, diameter / 2 - 120]);
+    outer_y = d3.scale.linear().domain([0, data.outer.length]).range([
+      0, diameter / 2 - 120
+    ]);
 
     //scale for bar chart
-    bar_x = d3.scale.linear()
-      .domain([0, 100])
-      .range([0, 200]);
+    bar_x = d3.scale.linear().domain([0, 100]).range([0, 200]);
 
     // setup positioning
-    dataTest.outer = dataTest.outer.map(function(d, i) {
+    data.outer = data.outer.map(function(d, i) {
       d.x = outer_x(i);
       d.y = diameter / 3;
       return d;
     });
 
-    dataTest.inner = dataTest.inner.map(function(d, i) {
+    data.inner = data.inner.map(function(d, i) {
       d.x = -(rect_width / 2) + 80;
       d.y = inner_y(i);
       return d;
     });
-
-    console.log(dataTest)
 
     return mainview;
   }
@@ -233,7 +198,7 @@ vis.mainview = function() {
   mainview.render = function() {
 
     function get_color(name) {
-      var c = Math.round(color(name));
+      var c = Math.round(color20(name));
       if (isNaN(c))
         return '#dddddd'; // fallback color
 
@@ -244,224 +209,136 @@ vis.mainview = function() {
       return ((x - 90) / 180 * Math.PI) - (Math.PI / 2);
     }
 
-    var diagonal = d3.svg.diagonal()
-      .source(function(d) {
-        return {
-          "x": d.outer.y * Math.cos(projectX(d.outer.x)),
-          "y": -d.outer.y * Math.sin(projectX(d.outer.x))
-        };
-      })
-      .target(function(d) {
-        return {
-          "x": d.inner.y + rect_height / 2,
-          "y": d.outer.x > 180 ? d.inner.x : d.inner.x + rect_width
-        };
-      })
-      .projection(function(d) {
-        return [d.y, d.x];
-      });
+    var diagonal = d3.svg.diagonal().source(function(d) {
+      return {
+        "x": d.outer.y * Math.cos(projectX(d.outer.x)),
+        "y": -d.outer.y * Math.sin(projectX(d.outer.x))
+      };
+    }).target(function(d) {
+      return {
+        "x": d.inner.y + rect_height / 2,
+        "y": d.outer.x > 180
+          ? d.inner.x
+          : d.inner.x + rect_width
+      };
+    }).projection(function(d) {
+      return [d.y, d.x];
+    });
 
-    var svg = container.append("svg")
-      .attr("width", size[0] - margin.left - margin.right)
-      .attr("height", diameter)
-      .append("g")
-      .attr("transform", "translate(" + (diameter / 2 + 50) + "," + diameter / 2 + ")");
+    var svg = container.append("svg").attr("width", size[0] - margin.left - margin.right).attr("height", diameter).append("g").attr("transform", "translate(" + (diameter / 2 + 80) + "," + diameter / 2 + ")");
 
+    //arc
+    var arcPath = d3.svg.arc().innerRadius(200).outerRadius(220)
 
-    //pie
-    var arcPath = d3.svg.arc()
-      .innerRadius(200)
-      .outerRadius(220)
+    var arcData = [];
+    var lastStart = 10 / 9 * Math.PI;
 
-    var dataset = [
-
-      {
-        startAngle: Math.PI * 10 / 9,
-        endAngle: Math.PI * 1.2
-      },
-      {
-        startAngle: Math.PI * 1.2,
-        endAngle: Math.PI * 1.5
-      },
-      {
-        startAngle: Math.PI * 1.5,
-        endAngle: Math.PI * 1.8
-      },
-      {
-        startAngle: Math.PI * 1.8,
-        endAngle: Math.PI * 34 / 18
+    for (i in subject) {
+      item = {
+        startAngle: lastStart,
+        endAngle: subject[i].length / data.outer.length * 7 / 9 * Math.PI + lastStart,
+        name: i
       }
-    ]
-    var color2 = d3.scale.category20();
+      arcData.push(item);
+      lastStart = subject[i].length / data.outer.length * 7 / 9 * Math.PI + lastStart;
+    }
 
-    var arcs = svg.append("g").selectAll("path")
-      .data(dataset)
-      .enter()
-      .append("path")
-      .attr("d", function(d) {
-        return arcPath(d)
-      }) // 生成弧
-      .attr("fill", function(d, i) {
-        return color2(i * 3)
-      })
-      .attr("opacity", 0.2)
+    // var c = d3.scale.category20();
 
+    var arcs = svg.append("g").selectAll("path").data(arcData).enter().append("path").attr("d", function(d) {
+      return arcPath(d)
+    }).attr("fill", function(d) {
+      return typeColor(d["name"], "outer");
+    })
 
     // links
-    var link = svg.append('g').attr('class', 'links').selectAll(".link")
-      .data(dataTest.links)
-      .enter().append('path')
-      .attr('class', 'link')
-      .attr('id', function(d) {
-        return d.id
-      })
-      .attr("d", diagonal)
-      .attr('stroke', function(d) {
-        return "#aaa";
-      })
-      .attr('stroke-width', link_width)
-      .attr("opacity", 0.4)
-
+    var link = svg.append('g').attr('class', 'links').selectAll(".link").data(data.links).enter().append('path').attr('class', 'link').attr('id', function(d) {
+      return d.id
+    }).attr("d", diagonal).attr('stroke', function(d) {
+      return "#aaa";
+    }).attr('stroke-width', link_width).attr("opacity", 0.2)
 
     // outer nodes
 
-    var onode = svg.append('g').selectAll(".outer_node")
-      .data(dataTest.outer)
-      .enter().append("g")
-      .attr("class", "outer_node")
-      .attr("transform", function(d) {
-        return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
-      })
-      .on("mouseover", mouseoverOnode)
-      .on("mouseout", mouseout);
+    var onode = svg.append('g').selectAll(".outer_node").data(data.outer).enter().append("g").attr("class", "outer_node").attr("transform", function(d) {
+      return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")";
+    }).on("mouseover", mouseoverOnode).on("mouseout", mouseoutOnode);
 
-    onode.append("circle")
-      .attr('id', function(d) {
-        return d.id
-      })
-      .attr("r", 4.5)
-      .attr("opacity", 0.5)
+    onode.append("circle").attr('id', function(d) {
+      return d.id
+    }).attr("r", 4.5).attr("fill", "#A7B2B8").attr("opacity", 1)
 
-    onode.append("circle")
-      .attr('r', 20)
-      .attr('visibility', 'hidden');
+    onode.append("circle").attr('r', 20).attr('visibility', 'hidden');
 
-    onode.append("text")
-      .attr('id', function(d) {
-        return d.id + '-txt';
-      })
-      .attr("dy", ".31em")
-      .attr("text-anchor", function(d) {
-        return d.x < 180 ? "start" : "end";
-      })
-      .attr("transform", function(d) {
-        return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)";
-      })
-      .text(function(d) {
-        return d.name;
-      });
+    onode.append("text").attr('id', function(d) {
+      return d.id + '-txt';
+    }).attr("dy", ".31em").attr("text-anchor", function(d) {
+      return d.x < 180
+        ? "start"
+        : "end";
+    }).attr("transform", function(d) {
+      return d.x < 180
+        ? "translate(8)"
+        : "rotate(180)translate(-8)";
+    }).text(function(d) {
+      return d.name;
+    });
 
     // inner nodes
 
-    var inode = svg.append('g').selectAll(".inner_node")
-      .data(dataTest.inner)
-      .enter().append("g")
-      .attr("class", "inner_node")
-      .attr("transform", function(d, i) {
-        return "translate(" + d.x + "," + d.y + ")"
-      })
-      .on("mouseover", mouseoverInode)
-      .on("mouseout", mouseout);
+    var inode = svg.append('g').selectAll(".inner_node").data(data.inner).enter().append("g").attr("class", "inner_node").attr("transform", function(d, i) {
+      return "translate(" + d.x + "," + d.y + ")"
+    }).on("mouseover", mouseoverInode).on("mouseout", mouseoutInode);
 
-    inode.append('rect')
-      .attr('width', rect_width)
-      .attr('height', rect_height)
-      .attr('id', function(d) {
-        return d.id;
-      })
-      .attr('fill', function(d) {
-        return get_color(d.name);
-      }).attr("stroke", "white")
-      .attr("stroke-width", 2)
+    inode.append('rect').attr('width', rect_width).attr('height', rect_height).attr('id', function(d) {
+      return d.id;
+    }).attr('fill', function(d) {
+      return universityColor(d.id);
+    }).attr("opacity", 1).attr("stroke", "white").attr("stroke-width", 2)
 
-    inode.append("text")
-      .attr('id', function(d) {
-        return d.id + '-txt';
-      })
-      .attr('text-anchor', 'middle')
-      .attr("transform", "translate(" + rect_width / 2 + ", " + rect_height * .75 + ")")
-      .text(function(d) {
-        return d.name;
-      });
+    inode.append("text").attr('id', function(d) {
+      return d.id + '-txt';
+    }).attr('text-anchor', 'middle').attr("transform", "translate(" + rect_width / 2 + ", " + rect_height * .75 + ")").text(function(d) {
+      return d.abbr;
+    });
 
     //bar chart
-    var rects = svg.append('g').selectAll(".rect")
-      .data(dataTest.inner)
-      .enter()
-      .append("rect")
-      .attr("id", d => "b" + d.id)
-      .attr("class", "bar")
-      .attr("x", function(d, i) {
-        return bar_x(0);
-      })
-      .attr("y", function(d, i) {
-        return inner_y(i);
-      })
-      .attr("width", function(d, i) {
-        return bar_x(i / dataTest.inner.length * 100)
-      })
-      .attr("height", function(d) {
-        return rect_height;
-      })
-      .attr("transform", "translate(" + (-(rect_width / 2) + rect_width + 100) + "," + 0 + ")")
-      .attr("fill", d => get_color(d.name))
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 1)
-      .attr("opacity", 0)
+    var rects = svg.append('g').selectAll(".rect").data(data.inner).enter().append("rect").attr("id", d => "b" + d.id).attr("class", "bar").attr("x", function(d, i) {
+      return bar_x(0);
+    }).attr("y", function(d, i) {
+      return inner_y(i);
+    }).attr("width", function(d, i) {
+      return bar_x(100)
+    }).attr("height", function(d) {
+      return rect_height;
+    }).attr("transform", "translate(" + (-(rect_width / 2) + rect_width + 100) + "," + 0 + ")").attr("fill", d => get_color(d.name)).attr("stroke", "#fff").attr("stroke-width", 1).attr("opacity", 0)
 
-    var texts = svg.append('g').selectAll(".barText")
-      .data(dataTest.inner)
-      .enter()
-      .append("text")
-      .attr("id", d => "t" + d.id)
-      .attr("class", "barText")
+    var texts = svg.append('g').selectAll(".barText").data(data.inner).enter().append("text").attr("id", d => "t" + d.id).attr("class", "barText").attr("x", function(d, i) {
+      return bar_x(100) + 150;
+    }).attr("y", function(d, i) {
+      return inner_y(i);
+    }).attr("dx", function() {
+      return 20;
+    }).attr("dy", function(d) {
+      return 20;
+    }).text(function(d, i) {
+      return "null";
+    }).style("opacity", 0)
 
-      .attr("x", function(d, i) {
-        return bar_x(i / dataTest.inner.length * 100) + 150;
-      })
-      .attr("y", function(d, i) {
-        return inner_y(i);
-      })
-      .attr("dx", function() {
-        return 20;
-      })
-      .attr("dy", function(d) {
-        return 20;
-      })
-      .text(function(d, i) {
-        return i / dataTest.inner.length * 100;
-      }).style("opacity", 0)
+    var title = svg.append('g').append("text").attr("class", "title").text("none").attr("transform", "translate(" + (-(rect_width / 2) + rect_width + 100) + "," + -(inner_y(data.inner.length) + 10) + ")").style("opacity", 0)
 
-    var title = svg.append('g')
-      .append("text")
-      .attr("class", "title")
-      .text("none")
-      .attr("transform", "translate(" + (-(rect_width / 2) + rect_width + 100) + "," + -(inner_y(dataTest.inner.length) + 10) + ")")
-      .style("opacity", 0)
+    var xAxis = d3.svg.axis().scale(bar_x).orient("bottom").tickValues([
+      0,
+      20,
+      40,
+      60,
+      80,
+      100
+    ]);
 
-    var xAxis = d3.svg.axis()
-      .scale(bar_x)
-      .orient("bottom")
-      .tickValues([0, 20, 40, 60, 80, 100]);
-
-    svg.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(" + (-(rect_width / 2) + rect_width + 100) + "," + (inner_y(dataTest.inner.length) + 10) + ")")
-      .call(xAxis)
-      .attr("opacity", 0)
+    svg.append("g").attr("class", "axis").attr("transform", "translate(" + (-(rect_width / 2) + rect_width + 100) + "," + (inner_y(data.inner.length) + 10) + ")").call(xAxis).attr("opacity", 0)
 
     //rank chart
-    
 
     // need to specify x/y/etc
 
@@ -482,28 +359,49 @@ vis.mainview = function() {
       return d.related_links.indexOf(a.id);
     });
 
-    for (var i = 0; i < d.related_nodes.length; i++) {
-      container.select('#' + d.related_nodes[i]).classed('highlight', true);
-      container.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'bold');
+    container.select('#' + d["id"]).attr("fill", function(d) {
+      return typeColor(d["type"], "link");
+    });
 
-      container.select('#b' + d.related_nodes[i]).transition()
-        .duration(700)
-        .ease("linear")
-        .attr("opacity", 1)
-
-      container.select('#t' + d.related_nodes[i]).transition()
-        .duration(700)
-        .style("opacity", 1)
-
+    for (var i = 0; i < data.inner.length; i++){
+      container.select('#' + data.inner[i].id).attr("fill", "#7E8E96");
     }
 
-    container.select(".axis").classed('highlight', true);
+    for (var i = 0; i < d.related_nodes.length; i++) {
 
-    container.select(".title").style('opacity', 1);
+      container.select('#' + d.related_nodes[i]).classed('highlight', true);
+      container.select('#' + d.related_nodes[i]).attr("fill", typeColor(d.type, "link"));
+      container.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'bold');
+
+      //update barchart
+      if (!d.abbr) {
+
+        var inner = data.inner[d.related_nodes[i].slice(1, d.related_nodes[i].length)];
+        var score = 0;
+        if (inner) {
+          for (var item in inner["subjects"]) {
+            if (inner["subjects"][item]["subject"] == d.name) {
+              score = inner["subjects"][item]["score"];
+            }
+          }
+        }
+
+        container.select('#b' + d.related_nodes[i]).attr("opacity", 0.6).transition().duration(500).ease("linear").attr("width", bar_x(score)).attr("fill", barColor(score, d.type))
+      }
+
+      container.select('#t' + d.related_nodes[i]).transition().duration(500).text(score).style("opacity", 1)
+    }
+
+    container.select('#' + d.id + '-txt').attr("fill", typeColor(d.type));
+    container.select(".axis").classed('highlight', true);
+    container.select(".title").text(d.name).style('opacity', 1);
 
     for (var i = 0; i < d.related_links.length; i++)
-      container.select('#' + d.related_links[i]).attr('stroke-width', '3px').attr("stroke", "#596D78").attr("opacity", 1);
-  }
+      container.select('#' + d.related_links[i]).attr('stroke-width', '2.5px').attr("stroke", function(d) {
+        // return "#596D78"
+        return typeColor(d["outer"]["type"], "link");
+      }).attr("opacity", 1);
+    }
 
   function mouseoverInode(d) {
     // bring to front
@@ -512,36 +410,145 @@ vis.mainview = function() {
     });
 
     for (var i = 0; i < d.related_nodes.length; i++) {
-      container.select('#' + d.related_nodes[i]).classed('highlight', true);
-      container.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'bold');
-
+      container.select('#' + d.related_nodes[i]).attr("opacity", 1).attr("fill", function(d) {
+        if (!d.abbr) {
+          return typeColor(d["type"], "link");
+        } else {
+          return "#7E8E96"
+        }
+      });
+      container.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'bold').attr("fill", function(d) {
+        if (!d.abbr) {
+          return typeColor(d.type, "link");
+        }
+      });
     }
 
-    for (var i = 0; i < d.related_links.length; i++)
-      container.select('#' + d.related_links[i]).attr('stroke-width', '3px').attr("stroke", "#596D78").attr("opacity", 1);
-  }
+    container.select('#' + d.id + '-txt').attr("font-weight", 'bold').text(d.university);
 
-  function mouseout(d) {
+    for (var i = 0; i < d.related_links.length; i++)
+      container.select('#' + d.related_links[i]).attr('stroke-width', '3px').attr("stroke", function(d) {
+        return typeColor(d["outer"]["type"], "link");
+      }).attr("opacity", 1);
+    }
+
+  function mouseoutInode(d) {
     for (var i = 0; i < d.related_nodes.length; i++) {
       container.select('#' + d.related_nodes[i]).classed('highlight', false);
       container.select('#b' + d.related_nodes[i]).classed('highlight', false);
       container.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'normal');
-
-      container.select('#b' + d.related_nodes[i]).transition()
-        .duration(200)
-        .ease("linear")
-        .attr("opacity", 0)
-
-      container.select('#t' + d.related_nodes[i]).transition()
-        .duration(200)
-        .style("opacity", 0)
+      container.select('#' + d.related_nodes[i]).attr("fill", "#A7B2B8");
+      container.select('#b' + d.related_nodes[i]).transition().duration(200).ease("linear").attr("opacity", 0)
+      container.select('#t' + d.related_nodes[i]).transition().duration(200).style("opacity", 0)
+      container.select('#' + d.related_nodes[i] + '-txt').attr("fill", null);
     }
 
-    container.select(".title").text(d.name).style('opacity', 0);
+    container.select('#' + d.id + '-txt').attr("font-weight", 'normal').text(d.abbr);
+    if (d.abbr) {
+      container.select('#' + d.id).attr("fill", universityColor(d.id));
+    }
+
+    for (var i = 0; i < d.related_links.length; i++)
+      d3.select('#' + d.related_links[i]).attr('stroke-width', link_width).attr("stroke", "#aaa").attr("opacity", 0.2);
+    }
+
+  function mouseoutOnode(d) {
+    for (var i = 0; i < d.related_nodes.length; i++) {
+      container.select('#' + d.related_nodes[i]).classed('highlight', false);
+      container.select('#b' + d.related_nodes[i]).classed('highlight', false);
+      container.select('#' + d.related_nodes[i] + '-txt').attr("font-weight", 'normal');
+      container.select('#b' + d.related_nodes[i]).transition().duration(200).ease("linear").attr("opacity", 0)
+      container.select('#t' + d.related_nodes[i]).transition().duration(200).style("opacity", 0)
+    }
+
+    for (var i = 0; i < data.inner.length; i++){
+      container.select('#' + data.inner[i].id).attr("fill", d => universityColor(data.inner[i].id))
+    }
+
+    container.select('#' + d.id).attr("fill", "#A9B2B7");
+    container.select('#' + d.id + '-txt').attr("fill", null);
+    container.select(".title").style('opacity', 0);
     container.select(".axis").classed('highlight', false);
 
     for (var i = 0; i < d.related_links.length; i++)
-      d3.select('#' + d.related_links[i]).attr('stroke-width', link_width).attr("stroke", "#aaa").attr("opacity", 0.4);;
+      d3.select('#' + d.related_links[i]).attr('stroke-width', link_width).attr("stroke", "#aaa").attr("opacity", 0.2);
+    }
+
+  function createCompareFunction(propertyName) {
+
+    return function(object1, object2) {
+      var value1 = object1[propertyName];
+      var value2 = object2[propertyName];
+
+      if (value1 < value2) {
+        return -1;
+      } else if (value1 > value2) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+  }
+
+  function typeColor(d, flag) {
+    if (d == "ARTS") {
+      return flag == "outer"
+        ? "#DCEBD8"
+        : "#A6DB98"
+    } else if (d == "ENG") {
+      return flag == "outer"
+        ? "#FEEFDE"
+        : "#FCDF9A"
+    } else if (d == "LIFE SCI") {
+      return flag == "outer"
+        ? "#D7E4EF"
+        : "#8EC0EE"
+    } else if (d == "NATURAL") {
+      return flag == "outer"
+        ? "#FCE7E5"
+        : "#F9B8A9"
+    } else {
+      return flag == "outer"
+        ? "#EEECFC"
+        : "#BEB6E0"
+    }
+  }
+
+  function barColor(score, type) {
+
+    var colorRange;
+
+    if (type == "ARTS") {
+      colorRange = colorbrewer.YlGn[9];
+    } else if (type == "ENG") {
+      colorRange = colorbrewer.Oranges[9];
+    } else if (type == "LIFE SCI") {
+      colorRange = colorbrewer.Blues[9];
+    } else if (type == "NATURAL") {
+      colorRange = colorbrewer.RdPu[9];
+    } else {
+      colorRange = colorbrewer.Purples[9];
+    }
+
+    var bc = d3.scale.linear().domain([
+      50,
+      56.25,
+      62.5,
+      68.75,
+      75,
+      81.25,
+      87,
+      93.25,
+      100
+    ]).range(colorRange);
+
+    return bc(score);
+
+  }
+
+  function universityColor(u) {
+    var uc = d3.scale.linear().domain([1, data.inner.length]).range(colorbrewer.Set3[12]);
+    return uc(parseInt(u.slice(1, u.length)));
   }
 
   return mainview;

@@ -25,19 +25,24 @@ function display() {
       console.log(error);
       return;
     }
-    console.log(json)
     hview.container(d3.select("#hview")).data(json).layout().render();
   });
 
-  mainview.container(d3.select("#mainview")).layout().render();
+  var init = [];
+  for (var i = 1; i <= 20; i++){
+    init.push(i);
+  }
+
+  load("/vis/get_subject_details", JSON.stringify(init));
 
 }
 
 function wire_views() {
 
   hview.dispatch.on('select', function(selected) {
+    d3.select("#mainview").selectAll("*").remove();
 
-    load("filter", JSON.stringify(selected));
+    load("/vis/get_subject_details", JSON.stringify(selected));
 
   });
 
@@ -45,29 +50,27 @@ function wire_views() {
 
 function load(url, param) {
 
-  var callback = function(error, json) {
-    if (!json) {
-      return;
-    }
-    if (json.responseText) {
-      json = JSON.parse(json.responseText);
-    }
-    if (error) {
-      console.log(error);
-    } else {
-      if (url.indexOf('filter') == 0) {
-          d3.select("#mainview").selectAll("*").remove();
-          mainview.data(json);
+  var callback = function(json) {
+
+      if (url.indexOf('get_subject_details')) {
+          console.log(json)
+
+          mainview.container(d3.select("#mainview")).data(json);
           mainview.layout().render();
-      }
     }
   };
 
   if (!param) {
     d3.json(url, callback);
   } else {
-    d3.xhr(url)
-      .header("Content-Type", "application/json")
-      .post(param, callback);
+    $.ajax({
+      url: url,
+      method: 'GET',
+      data: { ids: param },
+      success: function(resp) {
+        callback(JSON.parse(resp));
+      }
+    });
+
   };
 }

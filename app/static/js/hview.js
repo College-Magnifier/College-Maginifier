@@ -59,8 +59,6 @@ vis.hview = function() {
         })
         .alpha(0.2)
 
-    console.log(data)
-
     parcoords
         .data(data)
         .hideAxis(["university", "id"])
@@ -72,10 +70,19 @@ vis.hview = function() {
         .reorderable()
         .brushMode("1D-axes")
         .on("brushend", function(items) {
+
             selected = [];
-            for (i in items){
-              selected.push(items[i].id)
+
+            if (items.length == data.length){
+              for (var i = 1; i <= 20; i++){
+                selected.push(i);
+              }
+            } else {
+              for (i in items){
+                selected.push(items[i].id)
+              }
             }
+
             hview.dispatch.select(selected);
         })
         .reorderable()
