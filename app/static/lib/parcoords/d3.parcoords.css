@@ -35,7 +35,7 @@
 .parcoords .axis path {
     fill: none;
     stroke: grey;
-    stroke-width: 1.5px;
+    stroke-width: 1px;
     shape-rendering: crispEdges;
 }
 

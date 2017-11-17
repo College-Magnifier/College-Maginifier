@@ -41,6 +41,13 @@ def get_subject_scores():
     cursor.close()
     return json.dumps(data)
 
+# parallel coordinates
+@app.route('/filter', methods=['GET', 'POST'])
+def _filter():
+	ids = request.get_json(silent=True)
+	#api here
+	return json.dumps(ids)
+
 @app.route('/data/<dataname>')
 def _data(dataname):
     dataset = []

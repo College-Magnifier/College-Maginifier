@@ -54,12 +54,12 @@ footer.page-footer {
   height: 600px;
 }
 #mainview {
-  height: 600px;
+  height: 650px;
   overflow: scroll;
   width: 100%;
 }
 #hview {
-  height: 300px;
+  height: 250px;
 }
 
 /* main html */
@@ -196,6 +196,10 @@ div.no_selection {
   font-weight: 700;
 }
 
+.axis .domain {
+  fill: #596D78
+}
+
 text {
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
   font-family: 'Open Sans', sans-serif;
@@ -230,4 +234,33 @@ text {
 
 .highlight {
   opacity: 1;
+}
+
+.inner_node rect {
+    pointer-events: all;
+}
+
+.inner_node rect.highlight {
+    /*stroke: #315B7E;*/
+    fill: #596D78;
+    /*stroke-width: 2px;*/
+}
+
+.outer_node circle {
+    fill: #596D78;
+    stroke: #fff;
+    stroke-width: 1.5px;
+    pointer-events: all;
+}
+
+.outer_node circle.highlight
+{
+    fill: #596D78;
+    stroke: #596D78;
+    opacity: 1;
+    stroke-width: 2px;
+}
+
+.link {
+    fill: none;
 }

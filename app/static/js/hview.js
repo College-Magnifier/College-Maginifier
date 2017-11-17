@@ -39,6 +39,9 @@ vis.hview = function() {
   // Public Function
   hview.layout = function() {
 
+    size[0] = parseInt(container.style("width"));
+    size[1] = parseInt(container.style("height"));
+
     return hview;
   };
 
@@ -69,7 +72,11 @@ vis.hview = function() {
         .reorderable()
         .brushMode("1D-axes")
         .on("brushend", function(items) {
-            console.log(items)
+            selected = [];
+            for (i in items){
+              selected.push(items[i].id)
+            }
+            hview.dispatch.select(selected);
         })
         .reorderable()
         .interactive();

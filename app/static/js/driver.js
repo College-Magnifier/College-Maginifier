@@ -20,20 +20,54 @@ $(document).ready(function() {
 
 function display() {
 
-  var url = 'data/' + "overall.csv";
-
-  d3.json(url, function(error, json) {
+  d3.json('get_subject_sores', function(error, json) {
     if (error) {
       console.log(error);
       return;
     }
+    console.log(json)
     hview.container(d3.select("#hview")).data(json).layout().render();
-    mainview.container(d3.select("#mainview")).data(json).layout().render();
   });
 
+  mainview.container(d3.select("#mainview")).layout().render();
 
 }
 
 function wire_views() {
 
+  hview.dispatch.on('select', function(selected) {
+
+    load("filter", JSON.stringify(selected));
+
+  });
+
+}
+
+function load(url, param) {
+
+  var callback = function(error, json) {
+    if (!json) {
+      return;
+    }
+    if (json.responseText) {
+      json = JSON.parse(json.responseText);
+    }
+    if (error) {
+      console.log(error);
+    } else {
+      if (url.indexOf('filter') == 0) {
+          d3.select("#mainview").selectAll("*").remove();
+          mainview.data(json);
+          mainview.layout().render();
+      }
+    }
+  };
+
+  if (!param) {
+    d3.json(url, callback);
+  } else {
+    d3.xhr(url)
+      .header("Content-Type", "application/json")
+      .post(param, callback);
+  };
 }
