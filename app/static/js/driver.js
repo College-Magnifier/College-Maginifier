@@ -20,7 +20,7 @@ $(document).ready(function() {
 
 function display() {
 
-  d3.json('get_subject_sores', function(error, json) {
+  d3.json('/vis/get_subject_scores', function(error, json) {
     if (error) {
       console.log(error);
       return;
