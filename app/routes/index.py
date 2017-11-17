@@ -7,8 +7,9 @@ import codecs
 from app import app
 from flask import Flask, request
 from flaskext.mysql import MySQL
+from pymysql.cursors import DictCursor
 
-mysql = MySQL()
+mysql = MySQL(cursorclass=DictCursor)
 app.config['MYSQL_DATABASE_USER'] = 'coni_admin'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'admin'
 app.config['MYSQL_DATABASE_DB'] = 'coni_db'
@@ -31,7 +32,7 @@ def get_continents_school():
     data = load_map_json_data(map_scale);
     return json.dumps(data)
 
-@app.route('/test')
+@app.route('/get_subject_sores')
 def test_api():
     cursor = mysql.connect().cursor()
     cursor.execute("SELECT * from university_subjects")
