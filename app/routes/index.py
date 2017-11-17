@@ -41,12 +41,55 @@ def get_subject_scores():
     cursor.close()
     return json.dumps(data)
 
+def query_subject_details(table, combined_condition, output_dict, subject):
+    cursor = mysql.connect().cursor()
+    sql = 'SELECT * FROM ' + table + ' WHERE ' + combined_condition
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    for row in rows:
+        school_id = row['id']
+        school = row['university']
+        if school_id not in output_dict:
+            temp_dict = dict()
+            temp_dict['id'] = school_id
+            temp_dict['university'] = school
+            temp_dict['subjects'] = []
+            output_dict[school_id] = temp_dict
+        subject_list = output_dict[school_id]['subjects']
+        for key in row.keys():
+            if key in ['id', 'university', 'overall'] or not row[key]:
+                continue
+            temp = dict()
+            temp['type'] = subject
+            temp['subject'] = key
+            temp['score'] = row[key]
+            subject_list.append(temp)
+
 # parallel coordinates
-@app.route('/filter', methods=['GET', 'POST'])
-def _filter():
-	ids = request.get_json(silent=True)
-	#api here
-	return json.dumps(ids)
+@app.route('/vis/get_subject_details')
+def get_subject_details():
+    ids = json.loads(request.args['ids'])
+
+    conditions = []
+    for school_id in ids:
+        conditions.append('`id` = ' + str(school_id))
+    print conditions
+    combined_condition = ' OR '.join(conditions)
+
+    output_dict = dict()
+    query_subject_details('university_arts', combined_condition, output_dict, 'ARTS')
+    query_subject_details('university_eng', combined_condition, output_dict, 'ENG')
+    query_subject_details('university_life_sci', combined_condition, output_dict, 'LIFE SCI')
+    query_subject_details('university_natural', combined_condition, output_dict, 'NATURAL')
+    query_subject_details('university_social', combined_condition, output_dict, 'SOCIAL')
+
+    output_list = []
+    for school_id in output_dict.keys():
+        output_list.append(output_dict[school_id])
+
+    return json.dumps(output_list)
 
 @app.route('/data/<dataname>')
 def _data(dataname):
