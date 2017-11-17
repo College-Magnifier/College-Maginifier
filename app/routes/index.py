@@ -50,13 +50,6 @@ def query_subject_details(table, combined_condition, output_dict, subject):
 
     for row in rows:
         school_id = row['id']
-        school = row['university']
-        if school_id not in output_dict:
-            temp_dict = dict()
-            temp_dict['id'] = school_id
-            temp_dict['university'] = school
-            temp_dict['subjects'] = []
-            output_dict[school_id] = temp_dict
         subject_list = output_dict[school_id]['subjects']
         for key in row.keys():
             if key in ['id', 'university', 'overall'] or not row[key]:
@@ -79,6 +72,24 @@ def get_subject_details():
     combined_condition = ' OR '.join(conditions)
 
     output_dict = dict()
+
+    cursor = mysql.connect().cursor()
+    sql = 'SELECT * FROM university_abbr'
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.close()
+    for row in rows:
+        school_id = row['id']
+        school = row['name']
+        abbr = row['abbr']
+
+        temp_dict = dict()
+        temp_dict['id'] = school_id
+        temp_dict['university'] = school
+        temp_dict['abbr'] = abbr
+        temp_dict['subjects'] = []
+        output_dict[school_id] = temp_dict
+
     query_subject_details('university_arts', combined_condition, output_dict, 'ARTS')
     query_subject_details('university_eng', combined_condition, output_dict, 'ENG')
     query_subject_details('university_life_sci', combined_condition, output_dict, 'LIFE SCI')
