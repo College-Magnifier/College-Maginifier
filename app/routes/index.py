@@ -32,11 +32,13 @@ def get_continents_school():
     data = load_map_json_data(map_scale);
     return json.dumps(data)
 
-@app.route('/get_subject_sores')
-def test_api():
+@app.route('/vis/get_subject_scores')
+def get_subject_scores():
     cursor = mysql.connect().cursor()
-    cursor.execute("SELECT * from university_subjects")
+    sql = 'SELECT `id`, `university`, `overall` AS `OVERALL`, `arts` AS `ARTS`, `eng` AS `ENG`, `life_sci` AS `LIFE SCI`, `natural` AS `NATURAL`, `social` AS `SOCIAL` FROM university_subjects WHERE `arts` IS NOT NULL AND `eng` IS NOT NULL AND `life_sci` IS NOT NULL AND `natural` IS NOT NULL AND `social` IS NOT NULL'
+    cursor.execute(sql)
     data = cursor.fetchall()
+    cursor.close()
     return json.dumps(data)
 
 @app.route('/data/<dataname>')
