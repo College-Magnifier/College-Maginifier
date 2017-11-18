@@ -35,7 +35,7 @@ def get_continents_school():
 @app.route('/vis/get_subject_scores')
 def get_subject_scores():
     cursor = mysql.connect().cursor()
-    sql = 'SELECT `id`, `university`, `overall` AS `OVERALL`, `arts` AS `ARTS`, `eng` AS `ENG`, `life_sci` AS `LIFE SCI`, `natural` AS `NATURAL`, `social` AS `SOCIAL` FROM university_subjects_abbr WHERE `arts` IS NOT NULL AND `eng` IS NOT NULL AND `life_sci` IS NOT NULL AND `natural` IS NOT NULL AND `social` IS NOT NULL'
+    sql = 'SELECT `id`, `university`, `overall` AS `OVERALL`, `arts` AS `ARTS`, `eng` AS `ENG`, `life_sci` AS `LIFE SCI`, `natural` AS `NATURAL`, `social` AS `SOCIAL` FROM university_subjects WHERE `arts` IS NOT NULL AND `eng` IS NOT NULL AND `life_sci` IS NOT NULL AND `natural` IS NOT NULL AND `social` IS NOT NULL'
     cursor.execute(sql)
     data = cursor.fetchall()
     cursor.close()
@@ -68,12 +68,13 @@ def get_subject_details():
     conditions = []
     for school_id in ids:
         conditions.append('`id` = ' + str(school_id))
+    print conditions
     combined_condition = ' OR '.join(conditions)
 
     output_dict = dict()
 
     cursor = mysql.connect().cursor()
-    sql = 'SELECT * FROM university_abbr'
+    sql = 'SELECT * FROM university_abbr WHERE ' + combined_condition 
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
@@ -96,19 +97,7 @@ def get_subject_details():
     query_subject_details('university_social', combined_condition, output_dict, 'SOCIAL')
 
     output_list = []
-
-    cursor = mysql.connect().cursor()
-    sql = 'SELECT id, abbr FROM ' + 'university_subjects_abbr'
-    cursor.execute(sql)
-    rows = cursor.fetchall()
-    cursor.close()
-
-    abbr = {}
-    for row in rows:
-        abbr[row['id']] = row['abbr']
-
     for school_id in output_dict.keys():
-        output_dict[school_id]['abbr'] = abbr[school_id]
         output_list.append(output_dict[school_id])
 
     return json.dumps(output_list)
