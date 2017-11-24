@@ -69,6 +69,15 @@
 // };
 
 function renderMap(scale) {
+  if (scale == 'world-continents') {
+    $('#back-btn').hide();
+  } else if (scale == 'asia' || scale == 'europe' || scale == 'north-america' ||
+    scale == 'south-america' || scale == 'oceania' || scale == 'africa') {
+    $('#back-btn').show();
+    $('#back-btn').click(function() {
+      renderMap('world-continents');
+    });
+  }
   $.ajax({
     method: 'GET',
     url: '/map_data/school_distribution',

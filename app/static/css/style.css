@@ -47,6 +47,13 @@ footer.page-footer {
   padding: 10px;
 }
 
+#back-btn {
+  position: absolute;
+  bottom: 30px;
+  right: 10px;
+  padding: 0 10px;
+}
+
 #overview {
   height: 300px;
 }
