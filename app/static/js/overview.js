@@ -112,6 +112,21 @@ function renderMap(scale) {
                 case 'Asia':
                   renderMap('asia');
                   break;
+                case 'North America':
+                  renderMap('north-america');
+                  break;
+                case 'South America':
+                  renderMap('south-america');
+                  break;
+                case 'Europe':
+                  renderMap('europe');
+                  break;
+                case 'Africa':
+                  renderMap('africa');
+                  break;
+                case 'Oceania':
+                  renderMap('oceania');
+                  break;
                 }
               }
             }

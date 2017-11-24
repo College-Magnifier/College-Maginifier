@@ -9,6 +9,8 @@ from flask import Flask, request
 from flaskext.mysql import MySQL
 from pymysql.cursors import DictCursor
 
+from app.map.map import get_remain_code
+
 mysql = MySQL(cursorclass=DictCursor)
 app.config['MYSQL_DATABASE_USER'] = 'coni_admin'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'admin'
@@ -18,10 +20,6 @@ mysql.init_app(app)
 
 debug = False
 
-def load_map_json_data(filename):
-    json_url = os.path.join(app.root_path, 'data/map/' + filename + '.json')
-    return json.load(open(json_url))
-
 @app.route('/')
 def root():
     return app.send_static_file('index.html')
@@ -29,8 +27,41 @@ def root():
 @app.route('/map_data/school_distribution')
 def get_continents_school():
     map_scale = request.args['scale']
-    data = load_map_json_data(map_scale);
-    return json.dumps(data)
+    if map_scale == 'world-continents':
+        group_name = 'continent_code'
+    else:
+        group_name = 'country_code'
+        if map_scale == 'asia':
+            continent_name = 'as'
+        elif map_scale == 'north-america':
+            continent_name = 'na'
+        elif map_scale == 'south-america':
+            continent_name = 'sa'
+        elif map_scale == 'europe':
+            continent_name = 'eu'
+        elif map_scale == 'africa':
+            continent_name = 'af'
+        elif map_scale == 'oceania':
+            continent_name = 'oc'
+
+    cursor = mysql.connect().cursor()
+    sql = 'SELECT COUNT(`id`) as `count`, `{}` as `code` FROM university_geo'.format(group_name)
+    if map_scale != 'world-continents':
+        sql += ' WHERE `continent_code`="{}"'.format(continent_name)
+
+    sql += ' GROUP BY `{}`'.format(group_name)
+
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    results = []
+    for row in rows:
+        results.append([row['code'], row['count']])
+
+    results += get_remain_code(map_scale)
+
+    return json.dumps(results)
 
 @app.route('/vis/get_subject_scores')
 def get_subject_scores():
@@ -68,13 +99,12 @@ def get_subject_details():
     conditions = []
     for school_id in ids:
         conditions.append('`id` = ' + str(school_id))
-    print conditions
     combined_condition = ' OR '.join(conditions)
 
     output_dict = dict()
 
     cursor = mysql.connect().cursor()
-    sql = 'SELECT * FROM university_abbr WHERE ' + combined_condition 
+    sql = 'SELECT * FROM university_abbr WHERE ' + combined_condition
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
