@@ -67,10 +67,22 @@ def get_school_coordinates():
     map_scale = request.args['scale']
     if map_scale == 'united-states':
         country_code = 'us'
+    elif map_scale == 'canada':
+        country_code = 'ca'
     elif map_scale == 'united-kingdom':
         country_code = 'gb'
+    elif map_scale == 'netherlands':
+        country_code = 'nl'
+    elif map_scale == 'germany':
+        country_code = 'de'
     elif map_scale == 'china':
         country_code = 'cn'
+    elif map_scale == 'japan':
+        country_code = 'jp'
+    elif map_scale == 'south-korea':
+        country_code = 'kr'
+    elif map_scale == 'australia':
+        country_code = 'au'
 
     cursor = mysql.connect().cursor()
     sql = 'SELECT `university` as `name`, `latitude` as `lat`, `longitude` as `lon` FROM university_geo WHERE `country_code`="{}"'.format(country_code)

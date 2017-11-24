@@ -106,8 +106,8 @@ function showDistribution(scale, mapData) {
           point: {
             events: {
               click: function() {
-                console.log(this.name);
                 switch (this.name) {
+                // Continents
                 case 'Asia':
                   renderMap('asia');
                   break;
@@ -126,14 +126,33 @@ function showDistribution(scale, mapData) {
                 case 'Oceania':
                   renderMap('oceania');
                   break;
+                // Countries
                 case 'United States of America':
                   renderMap('united-states');
+                  break;
+                case 'Canada':
+                  renderMap('canada');
+                  break;
+                case 'United Kingdom':
+                  renderMap('united-kingdom');
+                  break;
+                case 'Netherlands':
+                  renderMap('netherlands');
+                  break;
+                case 'Germany':
+                  renderMap('germany');
                   break;
                 case 'China':
                   renderMap('china');
                   break;
-                case 'United Kingdom':
-                  renderMap('united-kingdom');
+                case 'Japan':
+                  renderMap('japan');
+                  break;
+                case 'South Korea':
+                  renderMap('south-korea');
+                  break;
+                case 'Australia':
+                  renderMap('australia');
                   break;
                 }
               }
@@ -214,27 +233,61 @@ function renderMap(scale) {
       renderMap('world-continents');
     });
     showDistribution(scale, Highcharts.maps['custom/' + scale]);
-  } else if (scale == 'united-states') {
+  } else if (scale == 'united-states' || scale == 'canada') {
     $('#back-btn').show();
     $('#back-btn').unbind('click');
     $('#back-btn').click(function() {
       renderMap('north-america');
     });
-    showSchoolCoordinates(scale, Highcharts.maps['countries/us/us-all']);
-  } else if (scale == 'united-kingdom') {
+    switch (scale) {
+    case 'united-states':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/us/us-all']);
+      break;
+    case 'canada':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/ca/ca-all']);
+      break;
+    }
+  } else if (scale == 'united-kingdom' || scale == 'netherlands' || scale == 'germany') {
     $('#back-btn').show();
     $('#back-btn').unbind('click');
     $('#back-btn').click(function() {
       renderMap('europe');
     });
-    showSchoolCoordinates(scale, Highcharts.maps['countries/gb/gb-all']);
-  } else if (scale == 'china') {
+    switch (scale) {
+    case 'united-kingdom':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/gb/gb-all']);
+      break;
+    case 'netherlands':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/nl/nl-all']);
+      break;
+    case 'germany':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/de/de-all']);
+      break;
+    }
+  } else if (scale == 'china' || scale == 'japan' || scale == 'south-korea') {
     $('#back-btn').show();
     $('#back-btn').unbind('click');
     $('#back-btn').click(function() {
       renderMap('asia');
     });
-    showSchoolCoordinates(scale, Highcharts.maps['countries/cn/custom/cn-all-sar-taiwan']);
+    switch (scale) {
+    case 'china':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/cn/custom/cn-all-sar-taiwan']);
+      break;
+    case 'japan':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/jp/jp-all']);
+      break;
+    case 'south-korea':
+      showSchoolCoordinates(scale, Highcharts.maps['countries/kr/kr-all']);
+      break;
+    }
+  } else if (scale == 'australia') {
+    $('#back-btn').show();
+    $('#back-btn').unbind('click');
+    $('#back-btn').click(function() {
+      renderMap('oceania');
+    });
+    showSchoolCoordinates(scale, Highcharts.maps['countries/au/au-all']);
   }
 }
 
