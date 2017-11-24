@@ -67,17 +67,9 @@
 //
 //   return overview;
 // };
-
-function renderMap(scale) {
-  if (scale == 'world-continents') {
-    $('#back-btn').hide();
-  } else if (scale == 'asia' || scale == 'europe' || scale == 'north-america' ||
-    scale == 'south-america' || scale == 'oceania' || scale == 'africa') {
-    $('#back-btn').show();
-    $('#back-btn').click(function() {
-      renderMap('world-continents');
-    });
-  }
+//
+//
+function showDistribution(scale, mapData) {
   $.ajax({
     method: 'GET',
     url: '/map_data/school_distribution',
@@ -93,14 +85,12 @@ function renderMap(scale) {
             verticalAlign: 'bottom'
           }
         },
-
         colorAxis: {
           min: 0
         },
-
         series: [ {
           data: data,
-          mapData: Highcharts.maps['custom/' + scale],
+          mapData: mapData,
           borderColor: 'white',
           name: 'Total Colleges',
           states: {
@@ -136,6 +126,15 @@ function renderMap(scale) {
                 case 'Oceania':
                   renderMap('oceania');
                   break;
+                case 'United States of America':
+                  renderMap('united-states');
+                  break;
+                case 'China':
+                  renderMap('china');
+                  break;
+                case 'United Kingdom':
+                  renderMap('united-kingdom');
+                  break;
                 }
               }
             }
@@ -148,6 +147,86 @@ function renderMap(scale) {
       });
     }
   });
+}
+
+function showSchoolCoordinates(country, mapData) {
+  // $.ajax({
+  //   method: 'GET',
+  //   url: '/map_data/school_coordinates',
+  //   data: { country: country },
+  //   success: function(resp) {
+  //     data = JSON.parse(resp);
+
+  $('#overview').highcharts('Map', {
+    title: { text: '' },
+    mapNavigation: {
+      enabled: true,
+      buttonOptions: {
+        verticalAlign: 'bottom'
+      }
+    },
+    tooltip: {
+      headerFormat: '',
+      pointFormat: '<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'
+    },
+    series: [ {
+      mapData: mapData,
+      name: 'Basemap',
+      borderColor: '#A0A0A0',
+      nullColor: 'rgba(200, 200, 200, 0.3)',
+      showInLegend: false
+    }, {
+      name: 'Separators',
+      type: 'mapline',
+      data: Highcharts.geojson(mapData, 'mapline'),
+      color: '#707070',
+      showInLegend: false,
+      enableMouseTracking: false
+    } ],
+
+    credits: {
+      enabled: false
+    }
+  });
+  //   }
+  // });
+}
+
+function renderMap(scale) {
+  if (scale == 'world-continents') {
+    $('#back-btn').hide();
+    $('#back-btn').unbind('click');
+    showDistribution(scale, Highcharts.maps['custom/world-continents']);
+  } else if (scale == 'asia' || scale == 'europe' || scale == 'north-america' ||
+    scale == 'south-america' || scale == 'oceania' || scale == 'africa') {
+    $('#back-btn').show();
+    $('#back-btn').unbind('click');
+    $('#back-btn').click(function() {
+      renderMap('world-continents');
+    });
+    showDistribution(scale, Highcharts.maps['custom/' + scale]);
+  } else if (scale == 'united-states') {
+    $('#back-btn').show();
+    $('#back-btn').unbind('click');
+    $('#back-btn').click(function() {
+      renderMap('north-america');
+    });
+    showSchoolCoordinates(scale, Highcharts.maps['countries/us/us-all']);
+  } else if (scale == 'united-kingdom') {
+    $('#back-btn').show();
+    $('#back-btn').unbind('click');
+    $('#back-btn').click(function() {
+      renderMap('europe');
+    });
+    showSchoolCoordinates(scale, Highcharts.maps['countries/gb/gb-all']);
+  } else if (scale == 'china') {
+    $('#back-btn').show();
+    $('#back-btn').unbind('click');
+    $('#back-btn').click(function() {
+      renderMap('asia');
+    });
+    showSchoolCoordinates(scale, Highcharts.maps['countries/cn/custom/cn-all-sar-taiwan']);
+  }
 }
 
 renderMap('world-continents');
