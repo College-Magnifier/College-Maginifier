@@ -50,7 +50,6 @@ def get_continents_school():
         sql += ' WHERE `continent_code`="{}"'.format(continent_name)
 
     sql += ' GROUP BY `{}`'.format(group_name)
-
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
@@ -62,6 +61,28 @@ def get_continents_school():
     results += get_remain_code(map_scale)
 
     return json.dumps(results)
+
+@app.route('/map_data/school_coordinates')
+def get_school_coordinates():
+    map_scale = request.args['scale']
+    if map_scale == 'united-states':
+        country_code = 'us'
+    elif map_scale == 'united-kingdom':
+        country_code = 'gb'
+    elif map_scale == 'china':
+        country_code = 'cn'
+
+    cursor = mysql.connect().cursor()
+    sql = 'SELECT `university` as `name`, `latitude` as `lat`, `longitude` as `lon` FROM university_geo WHERE `country_code`="{}"'.format(country_code)
+
+    if map_scale == 'china':
+        sql += ' OR `country_code`="tw"'
+
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.close()
+
+    return json.dumps(rows)
 
 @app.route('/vis/get_subject_scores')
 def get_subject_scores():

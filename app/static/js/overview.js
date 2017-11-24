@@ -149,47 +149,56 @@ function showDistribution(scale, mapData) {
   });
 }
 
-function showSchoolCoordinates(country, mapData) {
-  // $.ajax({
-  //   method: 'GET',
-  //   url: '/map_data/school_coordinates',
-  //   data: { country: country },
-  //   success: function(resp) {
-  //     data = JSON.parse(resp);
+function showSchoolCoordinates(scale, mapData) {
+  $.ajax({
+    method: 'GET',
+    url: '/map_data/school_coordinates',
+    data: { scale: scale },
+    success: function(resp) {
+      data = JSON.parse(resp);
 
-  $('#overview').highcharts('Map', {
-    title: { text: '' },
-    mapNavigation: {
-      enabled: true,
-      buttonOptions: {
-        verticalAlign: 'bottom'
-      }
-    },
-    tooltip: {
-      headerFormat: '',
-      pointFormat: '<b>{point.name}</b><br>Lat: {point.lat}, Lon: {point.lon}'
-    },
-    series: [ {
-      mapData: mapData,
-      name: 'Basemap',
-      borderColor: '#A0A0A0',
-      nullColor: 'rgba(200, 200, 200, 0.3)',
-      showInLegend: false
-    }, {
-      name: 'Separators',
-      type: 'mapline',
-      data: Highcharts.geojson(mapData, 'mapline'),
-      color: '#707070',
-      showInLegend: false,
-      enableMouseTracking: false
-    } ],
+      data.forEach(function(point) {
+        point['dataLabels'] = { enabled: false };
+      });
 
-    credits: {
-      enabled: false
+      $('#overview').highcharts('Map', {
+        title: { text: '' },
+        mapNavigation: {
+          enabled: true,
+          buttonOptions: {
+            verticalAlign: 'bottom'
+          }
+        },
+        tooltip: {
+          headerFormat: '',
+          pointFormat: '<b>{point.name}</b>'
+        },
+        series: [ {
+          mapData: mapData,
+          name: 'Basemap',
+          borderColor: '#A0A0A0',
+          nullColor: 'rgba(200, 200, 200, 0.3)',
+          showInLegend: false
+        }, {
+          name: 'Separators',
+          type: 'mapline',
+          data: Highcharts.geojson(mapData, 'mapline'),
+          color: '#707070',
+          showInLegend: false,
+          enableMouseTracking: false
+        }, {
+          type: 'mappoint',
+          name: 'Colleges',
+          color: Highcharts.getOptions().colors[1],
+          data: data
+        } ],
+
+        credits: {
+          enabled: false
+        }
+      });
     }
   });
-  //   }
-  // });
 }
 
 function renderMap(scale) {
