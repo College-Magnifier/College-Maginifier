@@ -216,11 +216,12 @@ def get_subject_details():
                 region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
     if 'ids' in request.args:
         ids = json.loads(request.args['ids'])
-        conditions = []
-        for school_id in ids:
-            conditions.append('`id` = ' + str(school_id))
-        id_condition = ' OR '.join(conditions)
-        id_condition = '(' + id_condition + ')'
+        if len(ids) > 0:
+            conditions = []
+            for school_id in ids:
+                conditions.append('`id` = ' + str(school_id))
+            id_condition = ' OR '.join(conditions)
+            id_condition = '(' + id_condition + ')'
 
     output_dict = dict()
 
