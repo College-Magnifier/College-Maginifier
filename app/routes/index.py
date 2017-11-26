@@ -105,17 +105,18 @@ def get_subject_scores():
     cursor.close()
     return json.dumps(data)
 
-def query_subject_details(table, combined_condition, output_dict, subject, region_condition):
+def query_subject_details(table, id_condition, output_dict, subject, region_condition):
     cursor = mysql.connect().cursor()
-    sql = 'SELECT * FROM ' + table + ' WHERE ' + combined_condition
-    if region_condition:
-        sql += region_condition
+    sql = 'SELECT * FROM ' + table
+    if id_condition and not region_condition:
+        sql += ' WHERE ' + id_condition
+    elif not id_condition and region_condition:
+        sql += ' WHERE ' + region_condition
+    elif id_condition and region_condition:
+        sql += ' WHERE ' + id_condition + ' AND ' + region_condition
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
-
-    print sql
-
     for row in rows:
         school_id = row['id']
         subject_list = output_dict[school_id]['subjects']
@@ -131,7 +132,8 @@ def query_subject_details(table, combined_condition, output_dict, subject, regio
 # parallel coordinates
 @app.route('/vis/get_subject_details')
 def get_subject_details():
-    region_condition = None
+    region_condition = ''
+    id_condition = ''
     if 'scale' in request.args:
         map_scale = request.args['scale']
         if map_scale == 'united-states':
@@ -165,24 +167,28 @@ def get_subject_details():
         elif map_scale == 'oceania':
             continent_name = 'oc'
         if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
-            region_condition = ' AND id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
+            region_condition = 'id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
         else:
-            region_condition = ' AND id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
+            region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
     if 'ids' in request.args:
         ids = json.loads(request.args['ids'])
-
-    conditions = []
-    for school_id in ids:
-        conditions.append('`id` = ' + str(school_id))
-    combined_condition = ' OR '.join(conditions)
-    combined_condition = '(' + combined_condition + ')'
+        conditions = []
+        for school_id in ids:
+            conditions.append('`id` = ' + str(school_id))
+        id_condition = ' OR '.join(conditions)
+        id_condition = '(' + id_condition + ')'
 
     output_dict = dict()
 
     cursor = mysql.connect().cursor()
-    sql = 'SELECT * FROM university_abbr WHERE ' + combined_condition
-    if region_condition:
-        sql += region_condition
+    sql = 'SELECT * FROM university_abbr'
+    if id_condition and not region_condition:
+        sql += ' WHERE ' + id_condition
+    elif not id_condition and region_condition:
+        sql += ' WHERE ' + region_condition
+    elif id_condition and region_condition:
+        sql += ' WHERE ' + id_condition + ' AND ' + region_condition
+
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
@@ -198,11 +204,11 @@ def get_subject_details():
         temp_dict['subjects'] = []
         output_dict[school_id] = temp_dict
 
-    query_subject_details('university_arts', combined_condition, output_dict, 'ARTS', region_condition)
-    query_subject_details('university_eng', combined_condition, output_dict, 'ENG', region_condition)
-    query_subject_details('university_life_sci', combined_condition, output_dict, 'LIFE SCI', region_condition)
-    query_subject_details('university_natural', combined_condition, output_dict, 'NATURAL', region_condition)
-    query_subject_details('university_social', combined_condition, output_dict, 'SOCIAL', region_condition)
+    query_subject_details('university_arts', id_condition, output_dict, 'ARTS', region_condition)
+    query_subject_details('university_eng', id_condition, output_dict, 'ENG', region_condition)
+    query_subject_details('university_life_sci', id_condition, output_dict, 'LIFE SCI', region_condition)
+    query_subject_details('university_natural', id_condition, output_dict, 'NATURAL', region_condition)
+    query_subject_details('university_social', id_condition, output_dict, 'SOCIAL', region_condition)
 
     output_list = []
     for school_id in output_dict.keys():
