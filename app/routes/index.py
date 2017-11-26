@@ -130,11 +130,12 @@ def get_subject_scores():
         elif map_scale == 'africa':
             continent_name = 'af'
         elif map_scale == 'oceania':
-            continent_name = 'oc'
-        if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
-            region_condition = 'id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
-        else:
-            region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
+            continent_name = 'oc':
+        if map_scale != 'world-continents':
+            if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
+                region_condition = 'id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
+            else:
+                region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
 
     cursor = mysql.connect().cursor()
     sql = 'SELECT `id`, `university`, `overall` AS `OVERALL`, `arts` AS `ARTS`, `eng` AS `ENG`, `life_sci` AS `LIFE SCI`, `natural` AS `NATURAL`, `social` AS `SOCIAL` FROM university_subjects WHERE `arts` IS NOT NULL AND `eng` IS NOT NULL AND `life_sci` IS NOT NULL AND `natural` IS NOT NULL AND `social` IS NOT NULL'
@@ -208,10 +209,11 @@ def get_subject_details():
             continent_name = 'af'
         elif map_scale == 'oceania':
             continent_name = 'oc'
-        if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
-            region_condition = 'id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
-        else:
-            region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
+        if map_scale != 'world-continents':
+            if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
+                region_condition = 'id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
+            else:
+                region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
     if 'ids' in request.args:
         ids = json.loads(request.args['ids'])
         conditions = []
