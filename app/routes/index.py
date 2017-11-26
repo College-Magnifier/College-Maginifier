@@ -130,7 +130,7 @@ def get_subject_scores():
         elif map_scale == 'africa':
             continent_name = 'af'
         elif map_scale == 'oceania':
-            continent_name = 'oc':
+            continent_name = 'oc'
         if map_scale != 'world-continents':
             if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
                 region_condition = 'id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
