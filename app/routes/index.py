@@ -24,6 +24,10 @@ debug = False
 def root():
     return app.send_static_file('index.html')
 
+@app.route('/data')
+def data_page():
+    return app.send_static_file('data.html')
+
 @app.route('/map_data/school_distribution')
 def get_continents_school():
     map_scale = request.args['scale']

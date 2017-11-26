@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+nav .nav-wrapper {
+  margin: 0 30px;
+}
+
+body .content {
+  margin: 15px 15px;
+}
+footer.page-footer {
+  padding: 0;
+  text-align: center;
+}
