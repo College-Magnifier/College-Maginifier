@@ -105,12 +105,16 @@ def get_subject_scores():
     cursor.close()
     return json.dumps(data)
 
-def query_subject_details(table, combined_condition, output_dict, subject):
+def query_subject_details(table, combined_condition, output_dict, subject, region_condition):
     cursor = mysql.connect().cursor()
     sql = 'SELECT * FROM ' + table + ' WHERE ' + combined_condition
+    if region_condition:
+        sql += region_condition
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
+
+    print sql
 
     for row in rows:
         school_id = row['id']
@@ -127,17 +131,58 @@ def query_subject_details(table, combined_condition, output_dict, subject):
 # parallel coordinates
 @app.route('/vis/get_subject_details')
 def get_subject_details():
-    ids = json.loads(request.args['ids'])
+    region_condition = None
+    if 'scale' in request.args:
+        map_scale = request.args['scale']
+        if map_scale == 'united-states':
+            country_code = 'us'
+        elif map_scale == 'canada':
+            country_code = 'ca'
+        elif map_scale == 'united-kingdom':
+            country_code = 'gb'
+        elif map_scale == 'netherlands':
+            country_code = 'nl'
+        elif map_scale == 'germany':
+            country_code = 'de'
+        elif map_scale == 'china':
+            country_code = 'cn'
+        elif map_scale == 'japan':
+            country_code = 'jp'
+        elif map_scale == 'south-korea':
+            country_code = 'kr'
+        elif map_scale == 'australia':
+            country_code = 'au'
+        elif map_scale == 'asia':
+            continent_name = 'as'
+        elif map_scale == 'north-america':
+            continent_name = 'na'
+        elif map_scale == 'south-america':
+            continent_name = 'sa'
+        elif map_scale == 'europe':
+            continent_name = 'eu'
+        elif map_scale == 'africa':
+            continent_name = 'af'
+        elif map_scale == 'oceania':
+            continent_name = 'oc'
+        if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
+            region_condition = ' AND id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
+        else:
+            region_condition = ' AND id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
+    if 'ids' in request.args:
+        ids = json.loads(request.args['ids'])
 
     conditions = []
     for school_id in ids:
         conditions.append('`id` = ' + str(school_id))
     combined_condition = ' OR '.join(conditions)
+    combined_condition = '(' + combined_condition + ')'
 
     output_dict = dict()
 
     cursor = mysql.connect().cursor()
     sql = 'SELECT * FROM university_abbr WHERE ' + combined_condition
+    if region_condition:
+        sql += region_condition
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
@@ -153,11 +198,11 @@ def get_subject_details():
         temp_dict['subjects'] = []
         output_dict[school_id] = temp_dict
 
-    query_subject_details('university_arts', combined_condition, output_dict, 'ARTS')
-    query_subject_details('university_eng', combined_condition, output_dict, 'ENG')
-    query_subject_details('university_life_sci', combined_condition, output_dict, 'LIFE SCI')
-    query_subject_details('university_natural', combined_condition, output_dict, 'NATURAL')
-    query_subject_details('university_social', combined_condition, output_dict, 'SOCIAL')
+    query_subject_details('university_arts', combined_condition, output_dict, 'ARTS', region_condition)
+    query_subject_details('university_eng', combined_condition, output_dict, 'ENG', region_condition)
+    query_subject_details('university_life_sci', combined_condition, output_dict, 'LIFE SCI', region_condition)
+    query_subject_details('university_natural', combined_condition, output_dict, 'NATURAL', region_condition)
+    query_subject_details('university_social', combined_condition, output_dict, 'SOCIAL', region_condition)
 
     output_list = []
     for school_id in output_dict.keys():

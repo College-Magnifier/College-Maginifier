@@ -222,6 +222,7 @@ function showSchoolCoordinates(scale, mapData) {
 
 function renderMap(scale) {
   // TODO: This is the place map changes, dispatch for other views here
+  console.log(scale);
 
   if (scale == 'world-continents') {
     $('#back-btn').hide();
