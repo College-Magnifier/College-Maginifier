@@ -15,6 +15,8 @@ $(document).ready(function() {
   wire_views();
 });
 
+var selectedIdByMap = [];
+
 //////////////////////////////////////////////////////////////////////
 // local functions
 
@@ -25,7 +27,6 @@ function display() {
       console.log(error);
       return;
     }
-    console.log(json)
     hview.container(d3.select('#hview')).data(json).layout().render();
   });
 
@@ -34,11 +35,9 @@ function display() {
     init.push(i);
   }
 
-  param = {
+  load('/vis/get_subject_details', {
     ids: JSON.stringify(init)
-  }
-
-  load('/vis/get_subject_details', param);
+  });
 
 }
 
@@ -47,20 +46,21 @@ function wire_views() {
   hview.dispatch.on('select', function(selected) {
     d3.select('#mainview').selectAll('*').remove();
 
-    param = {
-      ids: JSON.stringify(selected)
+    if (selected.length == 0){
+      selected = selectedIdByMap;
     }
-    load('/vis/get_subject_details', param);
+
+    load('/vis/get_subject_details', {
+      ids: JSON.stringify(selected)
+    });
 
   });
 
   overview.dispatch.on('select', function(scale){
 
-    param = {
+    load('/vis/get_subject_scores', {
       scale: scale
-    }
-
-    load('/vis/get_subject_scores', param);
+    });
   })
 
 }
@@ -70,10 +70,28 @@ function load(url, param) {
   var callback = function(json) {
 
     if (url.indexOf('get_subject_details') >= 0) {
-      mainview.container(d3.select('#mainview')).data(json);
-      mainview.layout().render();
+      updateMainview(json);
     } else if (url.indexOf('get_subject_scores') >= 0) {
       hview.data(json).update();
+
+      selectedIdByMap = [];
+      selected = [];
+
+      for (var i = 0; i < json.length; i++){
+        selectedIdByMap.push(json[i].id);
+      }
+
+      if (param.scale == "world-continents"){
+        for (var i = 1; i <= 20; i++) {
+          selected.push(i);
+        }
+      } else {
+        selected = selectedIdByMap;
+      }
+
+      load('/vis/get_subject_details', {
+        ids: JSON.stringify(selected)
+      });
     }
   };
 
@@ -90,4 +108,10 @@ function load(url, param) {
     });
 
   }
+}
+
+updateMainview = function(data){
+  d3.select("#mainview").selectAll("*").remove();
+  mainview.container(d3.select('#mainview')).data(data);
+  mainview.layout().render();
 }

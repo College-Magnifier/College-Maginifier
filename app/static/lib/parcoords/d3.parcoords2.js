@@ -1167,6 +1167,7 @@ pc.brushMode = function(mode) {
 				brushUpdated(selected());
 			})
 			.on("brushend", function() {
+        console.log(__)
 				events.brushend.call(pc, __.brushed);
 			});
 

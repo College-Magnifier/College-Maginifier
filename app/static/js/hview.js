@@ -73,14 +73,8 @@ vis.hview = function() {
 
             selected = [];
 
-            if (items.length == data.length){
-              for (var i = 1; i <= 20; i++){
-                selected.push(i);
-              }
-            } else {
-              for (i in items){
-                selected.push(items[i].id)
-              }
+            for (i in items){
+              selected.push(items[i].id)
             }
 
             hview.dispatch.select(selected);
