@@ -69,6 +69,11 @@
 // };
 //
 //
+vis.overview = function(){
+  var overview = {};
+var dispatch = d3.dispatch('select', 'mouseover', 'mouseout');
+overview.dispatch = dispatch;
+
 function showDistribution(scale, mapData) {
   $.ajax({
     method: 'GET',
@@ -95,7 +100,7 @@ function showDistribution(scale, mapData) {
           name: 'Total Colleges',
           states: {
             hover: {
-              color: '#BADA55'
+              color: '#FCD78D'
             }
           },
           dataLabels: {
@@ -222,7 +227,7 @@ function showSchoolCoordinates(scale, mapData) {
 
 function renderMap(scale) {
   // TODO: This is the place map changes, dispatch for other views here
-  console.log(scale);
+  dispatch.select(scale);
 
   if (scale == 'world-continents') {
     $('#back-btn').hide();
@@ -295,3 +300,5 @@ function renderMap(scale) {
 }
 
 renderMap('world-continents');
+return overview;
+}

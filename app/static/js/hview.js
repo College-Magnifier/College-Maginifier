@@ -92,6 +92,12 @@ vis.hview = function() {
   };
 
   hview.update = function() {
+
+    parcoords
+        .data(data)
+        .render()
+        .brushReset()
+
     return hview;
   };
 

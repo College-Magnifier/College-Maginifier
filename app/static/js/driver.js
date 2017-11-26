@@ -5,7 +5,7 @@
 */
 
 var mainview = vis.mainview();
-// var overview = vis.overview();
+var overview = vis.overview();
 var vview = vis.vview();
 var hview = vis.hview();
 
@@ -25,6 +25,7 @@ function display() {
       console.log(error);
       return;
     }
+    console.log(json)
     hview.container(d3.select('#hview')).data(json).layout().render();
   });
 
@@ -33,7 +34,11 @@ function display() {
     init.push(i);
   }
 
-  load('/vis/get_subject_details', JSON.stringify(init));
+  param = {
+    ids: JSON.stringify(init)
+  }
+
+  load('/vis/get_subject_details', param);
 
 }
 
@@ -42,9 +47,21 @@ function wire_views() {
   hview.dispatch.on('select', function(selected) {
     d3.select('#mainview').selectAll('*').remove();
 
-    load('/vis/get_subject_details', JSON.stringify(selected));
+    param = {
+      ids: JSON.stringify(selected)
+    }
+    load('/vis/get_subject_details', param);
 
   });
+
+  overview.dispatch.on('select', function(scale){
+
+    param = {
+      scale: scale
+    }
+
+    load('/vis/get_subject_scores', param);
+  })
 
 }
 
@@ -52,9 +69,11 @@ function load(url, param) {
 
   var callback = function(json) {
 
-    if (url.indexOf('get_subject_details')) {
+    if (url.indexOf('get_subject_details') >= 0) {
       mainview.container(d3.select('#mainview')).data(json);
       mainview.layout().render();
+    } else if (url.indexOf('get_subject_scores') >= 0) {
+      hview.data(json).update();
     }
   };
 
@@ -64,7 +83,7 @@ function load(url, param) {
     $.ajax({
       url: url,
       method: 'GET',
-      data: { ids: param },
+      data: param,
       success: function(resp) {
         callback(JSON.parse(resp));
       }
