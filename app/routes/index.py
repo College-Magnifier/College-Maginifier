@@ -14,6 +14,8 @@ app.config['MYSQL_DATABASE_DB'] = 'heroku_3467ccb11b915e9'
 app.config['MYSQL_DATABASE_HOST'] = 'us-cdbr-iron-east-05.cleardb.net'
 mysql.init_app(app)
 
+connected_mysql = mysql.connect()
+
 debug = False
 
 @app.route('/')
@@ -44,7 +46,7 @@ def get_continents_school():
         elif map_scale == 'oceania':
             continent_name = 'oc'
 
-    cursor = mysql.connect().cursor()
+    cursor = connected_mysql.cursor()
     sql = 'SELECT COUNT(`id`) as `count`, `{}` as `code` FROM university_geo'.format(group_name)
     if map_scale != 'world-continents':
         sql += ' WHERE `continent_code`="{}"'.format(continent_name)
@@ -84,7 +86,7 @@ def get_school_coordinates():
     elif map_scale == 'australia':
         country_code = 'au'
 
-    cursor = mysql.connect().cursor()
+    cursor = connected_mysql.cursor()
     sql = 'SELECT `university` as `name`, `latitude` as `lat`, `longitude` as `lon` FROM university_geo WHERE `country_code`="{}"'.format(country_code)
 
     if map_scale == 'china':
@@ -137,7 +139,7 @@ def get_subject_scores():
             else:
                 region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
 
-    cursor = mysql.connect().cursor()
+    cursor = connected_mysql.cursor()
     sql = 'SELECT `id`, `university`, `overall` AS `OVERALL`, `arts` AS `ARTS`, `eng` AS `ENG`, `life_sci` AS `LIFE SCI`, `natural` AS `NATURAL`, `social` AS `SOCIAL` FROM university_subjects WHERE `arts` IS NOT NULL AND `eng` IS NOT NULL AND `life_sci` IS NOT NULL AND `natural` IS NOT NULL AND `social` IS NOT NULL'
 
     if region_condition:
@@ -149,7 +151,7 @@ def get_subject_scores():
     return json.dumps(data)
 
 def query_subject_details(table, id_condition, output_dict, subject, region_condition):
-    cursor = mysql.connect().cursor()
+    cursor = connected_mysql.cursor()
     sql = 'SELECT * FROM ' + table
     if id_condition and not region_condition:
         sql += ' WHERE ' + id_condition
@@ -225,7 +227,7 @@ def get_subject_details():
 
     output_dict = dict()
 
-    cursor = mysql.connect().cursor()
+    cursor = connected_mysql.cursor()
     sql = 'SELECT * FROM university_abbr'
     if id_condition and not region_condition:
         sql += ' WHERE ' + id_condition
