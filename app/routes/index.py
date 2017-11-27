@@ -8,10 +8,10 @@ from pymysql.cursors import DictCursor
 from app.map.map import get_remain_code
 
 mysql = MySQL(cursorclass=DictCursor)
-app.config['MYSQL_DATABASE_USER'] = 'coni_admin'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'admin'
-app.config['MYSQL_DATABASE_DB'] = 'coni_db'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_USER'] = 'b1d54f103ab78b'
+app.config['MYSQL_DATABASE_PASSWORD'] = '8359eecb'
+app.config['MYSQL_DATABASE_DB'] = 'heroku_3467ccb11b915e9'
+app.config['MYSQL_DATABASE_HOST'] = 'us-cdbr-iron-east-05.cleardb.net'
 mysql.init_app(app)
 
 debug = False
