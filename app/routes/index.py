@@ -7,14 +7,11 @@ from pymysql.cursors import DictCursor
 
 from app.map.map import get_remain_code
 
-mysql = MySQL(cursorclass=DictCursor)
+mysql = MySQL(app, cursorclass=DictCursor)
 app.config['MYSQL_DATABASE_USER'] = 'b1d54f103ab78b'
 app.config['MYSQL_DATABASE_PASSWORD'] = '8359eecb'
 app.config['MYSQL_DATABASE_DB'] = 'heroku_3467ccb11b915e9'
 app.config['MYSQL_DATABASE_HOST'] = 'us-cdbr-iron-east-05.cleardb.net'
-mysql.init_app(app)
-
-connected_mysql = mysql.connect()
 
 debug = False
 
@@ -46,7 +43,8 @@ def get_continents_school():
         elif map_scale == 'oceania':
             continent_name = 'oc'
 
-    cursor = connected_mysql.cursor()
+    conn = mysql.connect()
+    cursor = conn.cursor()
     sql = 'SELECT COUNT(`id`) as `count`, `{}` as `code` FROM university_geo'.format(group_name)
     if map_scale != 'world-continents':
         sql += ' WHERE `continent_code`="{}"'.format(continent_name)
@@ -55,6 +53,7 @@ def get_continents_school():
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
+    conn.close()
 
     results = []
     for row in rows:
@@ -86,7 +85,8 @@ def get_school_coordinates():
     elif map_scale == 'australia':
         country_code = 'au'
 
-    cursor = connected_mysql.cursor()
+    conn = mysql.connect()
+    cursor = conn.cursor()
     sql = 'SELECT `university` as `name`, `latitude` as `lat`, `longitude` as `lon` FROM university_geo WHERE `country_code`="{}"'.format(country_code)
 
     if map_scale == 'china':
@@ -95,6 +95,7 @@ def get_school_coordinates():
     cursor.execute(sql)
     rows = cursor.fetchall()
     cursor.close()
+    conn.close()
 
     return json.dumps(rows)
 
@@ -139,7 +140,8 @@ def get_subject_scores():
             else:
                 region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
 
-    cursor = connected_mysql.cursor()
+    conn = mysql.connect()
+    cursor = conn.cursor()
     sql = 'SELECT `id`, `university`, `overall` AS `OVERALL`, `arts` AS `ARTS`, `eng` AS `ENG`, `life_sci` AS `LIFE SCI`, `natural` AS `NATURAL`, `social` AS `SOCIAL` FROM university_subjects WHERE `arts` IS NOT NULL AND `eng` IS NOT NULL AND `life_sci` IS NOT NULL AND `natural` IS NOT NULL AND `social` IS NOT NULL'
 
     if region_condition:
@@ -148,10 +150,11 @@ def get_subject_scores():
     cursor.execute(sql)
     data = cursor.fetchall()
     cursor.close()
+    conn.close()
+
     return json.dumps(data)
 
-def query_subject_details(table, id_condition, output_dict, subject, region_condition):
-    cursor = connected_mysql.cursor()
+def query_subject_details(table, id_condition, output_dict, subject, region_condition, cursor):
     sql = 'SELECT * FROM ' + table
     if id_condition and not region_condition:
         sql += ' WHERE ' + id_condition
@@ -161,7 +164,6 @@ def query_subject_details(table, id_condition, output_dict, subject, region_cond
         sql += ' WHERE ' + id_condition + ' AND ' + region_condition
     cursor.execute(sql)
     rows = cursor.fetchall()
-    cursor.close()
     for row in rows:
         school_id = row['id']
         subject_list = output_dict[school_id]['subjects']
@@ -227,7 +229,8 @@ def get_subject_details():
 
     output_dict = dict()
 
-    cursor = connected_mysql.cursor()
+    conn = mysql.connect()
+    cursor = conn.cursor()
     sql = 'SELECT * FROM university_abbr'
     if id_condition and not region_condition:
         sql += ' WHERE ' + id_condition
@@ -238,7 +241,6 @@ def get_subject_details():
 
     cursor.execute(sql)
     rows = cursor.fetchall()
-    cursor.close()
     for row in rows:
         school_id = row['id']
         school = row['name']
@@ -251,11 +253,13 @@ def get_subject_details():
         temp_dict['subjects'] = []
         output_dict[school_id] = temp_dict
 
-    query_subject_details('university_arts', id_condition, output_dict, 'ARTS', region_condition)
-    query_subject_details('university_eng', id_condition, output_dict, 'ENG', region_condition)
-    query_subject_details('university_life_sci', id_condition, output_dict, 'LIFE SCI', region_condition)
-    query_subject_details('university_natural', id_condition, output_dict, 'NATURAL', region_condition)
-    query_subject_details('university_social', id_condition, output_dict, 'SOCIAL', region_condition)
+    query_subject_details('university_arts', id_condition, output_dict, 'ARTS', region_condition, cursor)
+    query_subject_details('university_eng', id_condition, output_dict, 'ENG', region_condition, cursor)
+    query_subject_details('university_life_sci', id_condition, output_dict, 'LIFE SCI', region_condition, cursor)
+    query_subject_details('university_natural', id_condition, output_dict, 'NATURAL', region_condition, cursor)
+    query_subject_details('university_social', id_condition, output_dict, 'SOCIAL', region_condition, cursor)
+    cursor.close()
+    conn.close()
 
     output_list = []
     for school_id in output_dict.keys():
