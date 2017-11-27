@@ -1,8 +1,4 @@
 import json
-import os
-import csv
-import unicodecsv
-import codecs
 
 from app import app
 from flask import Flask, request
