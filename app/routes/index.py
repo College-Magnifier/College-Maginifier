@@ -23,6 +23,11 @@ def root():
 def data_page():
     return app.send_static_file('data.html')
 
+@app.route('/get_school_descriptions')
+def get_school_descriptions():
+    school_id = request.args['id']
+    return app.send_static_file('html/{}.html'.format(school_id))
+
 @app.route('/map_data/school_distribution')
 def get_continents_school():
     map_scale = request.args['scale']

@@ -39,8 +39,8 @@ vis.hview = function() {
   // Public Function
   hview.layout = function() {
 
-    size[0] = parseInt(container.style("width"));
-    size[1] = parseInt(container.style("height"));
+    size[0] = parseInt(container.style('width'));
+    size[1] = parseInt(container.style('height'));
 
     return hview;
   };
@@ -48,36 +48,36 @@ vis.hview = function() {
   hview.render = function() {
 
     var color = d3.scale.linear()
-      .domain([200, 1])
-      .range(["#E6EAF3", "#133494"])
+      .domain([ 200, 1 ])
+      .range([ '#E6EAF3', '#133494' ])
       .interpolate(d3.interpolateLab);
 
     parcoords = d3.parcoords()(container[0][0])
         .color(function(d, i) {
-            return color(d['id']);
+          return color(d['id']);
             // return "#87B2ED"
         })
-        .alpha(0.2)
+        .alpha(0.2);
 
     parcoords
         .data(data)
-        .hideAxis(["university", "id"])
+        .hideAxis([ 'university', 'id' ])
         .rate(150)
-        .composite("darker")
-        .mode("queue")
+        .composite('darker')
+        .mode('queue')
         .render()
         .shadows()
         .reorderable()
-        .brushMode("1D-axes")
-        .on("brushend", function(items) {
+        .brushMode('1D-axes')
+        .on('brushend', function(items) {
 
-            selected = [];
+          selected = [];
 
-            for (i in items){
-              selected.push(items[i].id)
-            }
+          for (i in items) {
+            selected.push(items[i].id);
+          }
 
-            hview.dispatch.select(selected);
+          hview.dispatch.select(selected);
         })
         .reorderable()
         .interactive();
@@ -90,7 +90,7 @@ vis.hview = function() {
     parcoords
         .data(data)
         .render()
-        .brushReset()
+        .brushReset();
 
     return hview;
   };

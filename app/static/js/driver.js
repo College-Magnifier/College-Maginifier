@@ -6,7 +6,7 @@
 
 var mainview = vis.mainview();
 var overview = vis.overview();
-var vview = vis.vview();
+// var vview = vis.vview();
 var hview = vis.hview();
 
 // layout UI and setup events
@@ -46,7 +46,7 @@ function wire_views() {
   hview.dispatch.on('select', function(selected) {
     d3.select('#mainview').selectAll('*').remove();
 
-    if (selected.length == 0){
+    if (selected.length == 0) {
       selected = selectedIdByMap;
     }
 
@@ -56,12 +56,12 @@ function wire_views() {
 
   });
 
-  overview.dispatch.on('select', function(scale){
+  overview.dispatch.on('select', function(scale) {
 
     load('/vis/get_subject_scores', {
       scale: scale
     });
-  })
+  });
 
 }
 
@@ -77,11 +77,11 @@ function load(url, param) {
       selectedIdByMap = [];
       selected = [];
 
-      for (var i = 0; i < json.length; i++){
+      for (var i = 0; i < json.length; i++) {
         selectedIdByMap.push(json[i].id);
       }
 
-      if (param.scale == "world-continents"){
+      if (param.scale == 'world-continents') {
         for (var i = 1; i <= 20; i++) {
           selected.push(i);
         }
@@ -110,8 +110,8 @@ function load(url, param) {
   }
 }
 
-updateMainview = function(data){
-  d3.select("#mainview").selectAll("*").remove();
+updateMainview = function(data) {
+  d3.select('#mainview').selectAll('*').remove();
   mainview.container(d3.select('#mainview')).data(data);
   mainview.layout().render();
-}
+};

@@ -160,7 +160,6 @@ vis.overview = function() {
   }
 
   function renderMap(scale) {
-  // TODO: This is the place map changes, dispatch for other views here
     dispatch.select(scale);
 
     if (scale == 'world-continents') {
