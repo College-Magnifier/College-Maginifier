@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <nav class = "blue-grey darken-3">
+  <nav class="blue-grey darken-3">
     <div class="nav-wrapper">
       <a href="#" class="brand-logo ">College Magnifier</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -23,30 +23,65 @@
 
   <div id="app" class="content row">
     <div class="row">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- <tr v-for="item in items">
-            <td v-for="item in items">Alvin</td>
-          </tr> -->
-        </tbody>
-      </table>
+    </div>
+    <div class="row">
+      <div class="col s10 offset-s1">
+        <table class="striped centered">
+          <thead>
+            <tr>
+              <th>Ranking</th>
+              <th>University</th>
+              <th>Overall Score</th>
+              <th>Arts & Humanities</th>
+              <th>Engineering & Technology</th>
+              <th>Life Sciences & Medicine</th>
+              <th>Natural Sciences</th>
+              <th>Social Sciences & Management</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="row in curSchoolRows">
+              <td>{{ row.id }}</td>
+              <td>{{ row.university }}</td>
+              <td>{{ row.overall }}</td>
+              <td>{{ row.arts }}</td>
+              <td>{{ row.eng }}</td>
+              <td>{{ row.life_sci }}</td>
+              <td>{{ row.natural }}</td>
+              <td>{{ row.social }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s6 offset-s3">
+        <ul class="pagination">
+          <li class="waves-effect" :class="{ disabled: curPage === 1 }">
+            <a href="javascript:void(0)" @click="changePage(curPage - 1)"><i class="material-icons">chevron_left</i></a>
+          </li>
+          <li v-for="num in [1,2,3,4,5,6,7,8,9,10]" :class="{ active: num === curPage, 'blue-grey': num === curPage, 'darken-3': num === curPage }">
+            <a href="javascript:void(0)" @click="changePage(num)">{{ num }}</a>
+          </li>
+          <li class="waves-effect" :class="{ disabled: curPage === 10 }">
+            <a href="javascript:void(0)" @click="changePage(curPage + 1)"><i class="material-icons">chevron_right</i></a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
+
+  <div class="credit">Data From <a href="https://www.topuniversities.com">https://www.topuniversities.com</a></div>
 
   <footer class="page-footer blue-grey darken-3">
     <div class="footer-copyright">
       <div class="container">
-        &copy; 2017 - Hanfei Lin - Zhuo Li - Han Yin - CS519 - UIUC
+        &copy; 2017 - College Magnifier
       </div>
     </div>
   </footer>
 
-  <script type="text/javascript" src="lib/vue/vue.min.js"></script>
+  <script type="text/javascript" src="lib/vue/vue.js"></script>
   <script type="text/javascript" src="lib/jquery/jquery-1.10.1.min.js"></script>
   <script type="text/javascript" src="lib/materialize/materialize.min.js"></script>
 
