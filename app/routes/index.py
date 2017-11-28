@@ -271,3 +271,21 @@ def get_subject_details():
         output_list.append(output_dict[school_id])
 
     return json.dumps(output_list)
+
+@app.route('/data/scores')
+def get_scores():
+    if 'subject' not in request.args:
+        table = 'university_subjects'
+    else:
+        subject = request.args['subject']
+        table = 'university_' + subject
+
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    sql = 'SELECT * FROM {}'.format(table)
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    return json.dumps(rows)
