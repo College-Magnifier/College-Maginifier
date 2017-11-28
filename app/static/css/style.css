@@ -272,6 +272,10 @@ text {
     opacity: 1;
 }
 
+.inner_node rect.selected {
+    fill: #9cd2ff;
+}
+
 .outer_node circle {
     /*fill: #596D78;*/
     stroke: #fff;

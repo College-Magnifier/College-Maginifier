@@ -1,39 +1,26 @@
 /*
-  Generate class dependencies graph
+  Subject Magnifier
   Author : Hanfei Lin
   Date: 10/14/2017
 */
 
 vis.mainview = function() {
 
-  var mainview = {};
-  var container = null;
-  var data = null;
-  var size = [ 0, 0 ];
-  var margin = {
-    left: 10,
-    top: 10,
-    right: 10,
-    bottom: 10
-  };
+  ///////////////////////////////////////////////////
+  // Public Parameters
+
+  var mainview = {},
+    container = null,
+    data = null,
+    size = [0, 0],
+    margin = {
+      left: 10,
+      top: 10,
+      right: 10,
+      bottom: 10
+    };
+
   var dispatch = d3.dispatch('select', 'mouseover', 'mouseout');
-
-  mainview.container = function(_) {
-    if (!arguments.length) {
-      return container;
-    }
-    container = _;
-    return mainview;
-  };
-
-  mainview.data = function(_) {
-    if (!arguments.length) {
-      return data;
-    }
-    data = _;
-    return mainview;
-  };
-
   mainview.dispatch = dispatch;
 
   ///////////////////////////////////////////////////
@@ -60,13 +47,31 @@ vis.mainview = function() {
   ///////////////////////////////////////////////////
   // Public Function
 
-  //calculate
+  // set up container
+  mainview.container = function(_) {
+    if (!arguments.length) {
+      return container;
+    }
+    container = _;
+    return mainview;
+  };
+
+  // set up data
+  mainview.data = function(_) {
+    if (!arguments.length) {
+      return data;
+    }
+    data = _;
+    return mainview;
+  };
+
+  //calculation
   mainview.layout = function() {
 
     outer = d3.map(),
-    inner = [],
-    links = [],
-    subject = [];
+      inner = [],
+      links = [],
+      subject = [];
 
     size[0] = parseInt(container.style('width'));
     size[1] = parseInt(container.style('height'));
@@ -90,15 +95,16 @@ vis.mainview = function() {
         abbr: d['abbr'],
         university: d['university'],
         subjects: d['subjects'],
-        related_links: []
+        related_links: [],
+        selected: false
       };
 
-      innerItem.related_nodes = [ innerItem.id ];
+      innerItem.related_nodes = [innerItem.id];
       inner.push(innerItem);
 
       //cast to array
       if (!Array.isArray(d['subjects']))
-        d['subjects'] = [ d['subjects'] ];
+        d['subjects'] = [d['subjects']];
 
       d['subjects'].forEach(function(d1) {
 
@@ -113,7 +119,7 @@ vis.mainview = function() {
             related_links: []
           };
 
-          outerItem.related_nodes = [ outerItem.id ];
+          outerItem.related_nodes = [outerItem.id];
           outerId = outerId + 1;
           outer.set(d1['subject'], outerItem);
         }
@@ -167,18 +173,18 @@ vis.mainview = function() {
     var ol = data.outer.length;
 
     //scale
-    inner_y = d3.scale.linear().domain([ 0, il ]).range([ -(il * rect_height) / 2,
+    inner_y = d3.scale.linear().domain([0, il]).range([-(il * rect_height) / 2,
       il * rect_height / 2
     ]);
 
-    outer_x = d3.scale.linear().domain([ 0, data.outer.length ]).range([ 200, 340 ]);
+    outer_x = d3.scale.linear().domain([0, data.outer.length]).range([200, 340]);
 
-    outer_y = d3.scale.linear().domain([ 0, data.outer.length ]).range([
+    outer_y = d3.scale.linear().domain([0, data.outer.length]).range([
       0, diameter / 2 - 120
     ]);
 
     //scale for bar chart
-    bar_x = d3.scale.linear().domain([ 0, 100 ]).range([ 0, 200 ]);
+    bar_x = d3.scale.linear().domain([0, 100]).range([0, 200]);
 
     // setup positioning
     data.outer = data.outer.map(function(d, i) {
@@ -196,6 +202,7 @@ vis.mainview = function() {
     return mainview;
   };
 
+  // render
   mainview.render = function() {
 
     function get_color(name) {
@@ -219,12 +226,12 @@ vis.mainview = function() {
     }).target(function(d) {
       return {
         'x': d.inner.y + rect_height / 2,
-        'y': d.outer.x > 180
-          ? d.inner.x
-          : d.inner.x + rect_width
+        'y': d.outer.x > 180 ?
+          d.inner.x :
+          d.inner.x + rect_width
       };
     }).projection(function(d) {
-      return [ d.y, d.x ];
+      return [d.y, d.x];
     });
 
     var svg = container.append('svg').attr('width', size[0] - margin.left - margin.right).attr('height', diameter).append('g').attr('transform', 'translate(' + (diameter / 2 + 80) + ',' + diameter / 2 + ')');
@@ -275,13 +282,13 @@ vis.mainview = function() {
     onode.append('text').attr('id', function(d) {
       return d.id + '-txt';
     }).attr('dy', '.31em').attr('text-anchor', function(d) {
-      return d.x < 180
-        ? 'start'
-        : 'end';
+      return d.x < 180 ?
+        'start' :
+        'end';
     }).attr('transform', function(d) {
-      return d.x < 180
-        ? 'translate(8)'
-        : 'rotate(180)translate(-8)';
+      return d.x < 180 ?
+        'translate(8)' :
+        'rotate(180)translate(-8)';
     }).text(function(d) {
       return d.name;
     });
@@ -290,7 +297,16 @@ vis.mainview = function() {
 
     var inode = svg.append('g').selectAll('.inner_node').data(data.inner).enter().append('g').attr('class', 'inner_node').attr('transform', function(d, i) {
       return 'translate(' + d.x + ',' + d.y + ')';
-    }).on('mouseover', mouseoverInode).on('mouseout', mouseoutInode).on("click", function(d){
+    }).on('mouseover', mouseoverInode).on('mouseout', mouseoutInode).on("click", function(d) {
+      container.selectAll("*").classed("selected", false);
+      for (var node in data.inner){
+        if (data.inner[node].uid != d.uid){
+          data.inner[node].selected = false;
+        }
+      }
+
+      d.selected = d.selected ? false : true;
+      container.select("#" + d.id).classed("selected", d.selected);
       mainview.dispatch.select(d.uid);
     })
 
@@ -342,12 +358,6 @@ vis.mainview = function() {
 
     svg.append('g').attr('class', 'axis').attr('transform', 'translate(' + (-(rect_width / 2) + rect_width + 100) + ',' + (inner_y(data.inner.length) + 10) + ')').call(xAxis).attr('opacity', 0);
 
-    //rank chart
-
-    // need to specify x/y/etc
-
-    // d3.select(self.frameElement).style("height", diameter - 150 + "px");
-
     return mainview;
   };
 
@@ -356,7 +366,10 @@ vis.mainview = function() {
     return mainview;
   };
 
-  //private function
+  ///////////////////////////////////////////////////
+  // Private Function
+
+  // When mouseover outside nodes
   function mouseoverOnode(d) {
     // bring to front
     container.selectAll('.links .link').sort(function(a, b) {
@@ -368,7 +381,7 @@ vis.mainview = function() {
     });
 
     for (var i = 0; i < data.inner.length; i++) {
-      container.select('#' + data.inner[i].id).attr('fill', '#7E8E96');
+      container.select('#' + data.inner[i].id).attr('fill', '#7E7E7E');
     }
 
     for (var i = 0; i < d.related_nodes.length; i++) {
@@ -408,6 +421,7 @@ vis.mainview = function() {
     }
   }
 
+  // When mouseover inside nodes
   function mouseoverInode(d) {
     // bring to front
     container.selectAll('.links .link').sort(function(a, b) {
@@ -419,7 +433,7 @@ vis.mainview = function() {
         if (!d.abbr) {
           return typeColor(d['type'], 'link');
         } else {
-          return '#7E8E96';
+          return '#9cd2ff';
         }
       });
       container.select('#' + d.related_nodes[i] + '-txt').attr('font-weight', 'bold').attr('fill', function(d) {
@@ -438,27 +452,7 @@ vis.mainview = function() {
     }
   }
 
-  function mouseoutInode(d) {
-    for (var i = 0; i < d.related_nodes.length; i++) {
-      container.select('#' + d.related_nodes[i]).classed('highlight', false);
-      container.select('#b' + d.related_nodes[i]).classed('highlight', false);
-      container.select('#' + d.related_nodes[i] + '-txt').attr('font-weight', 'normal');
-      container.select('#' + d.related_nodes[i]).attr('fill', '#A7B2B8');
-      container.select('#b' + d.related_nodes[i]).transition().duration(200).ease('linear').attr('opacity', 0);
-      container.select('#t' + d.related_nodes[i]).transition().duration(200).style('opacity', 0);
-      container.select('#' + d.related_nodes[i] + '-txt').attr('fill', null);
-    }
-
-    container.select('#' + d.id + '-txt').attr('font-weight', 'normal').text(d.abbr);
-    if (d.abbr) {
-      container.select('#' + d.id).attr('fill', universityColor(d.id));
-    }
-
-    for (var i = 0; i < d.related_links.length; i++) {
-      d3.select('#' + d.related_links[i]).attr('stroke-width', link_width).attr('stroke', '#aaa').attr('opacity', 0.2);
-    }
-  }
-
+  // When mouseout outside nodes
   function mouseoutOnode(d) {
     for (var i = 0; i < d.related_nodes.length; i++) {
       container.select('#' + d.related_nodes[i]).classed('highlight', false);
@@ -482,6 +476,29 @@ vis.mainview = function() {
     }
   }
 
+  // When mouseout inside nodes
+  function mouseoutInode(d) {
+    for (var i = 0; i < d.related_nodes.length; i++) {
+      container.select('#' + d.related_nodes[i]).classed('highlight', false);
+      container.select('#b' + d.related_nodes[i]).classed('highlight', false);
+      container.select('#' + d.related_nodes[i] + '-txt').attr('font-weight', 'normal');
+      container.select('#' + d.related_nodes[i]).attr('fill', '#A7B2B8');
+      container.select('#b' + d.related_nodes[i]).transition().duration(200).ease('linear').attr('opacity', 0);
+      container.select('#t' + d.related_nodes[i]).transition().duration(200).style('opacity', 0);
+      container.select('#' + d.related_nodes[i] + '-txt').attr('fill', null);
+    }
+
+    container.select('#' + d.id + '-txt').attr('font-weight', 'normal').text(d.abbr);
+    if (d.abbr) {
+      container.select('#' + d.id).attr('fill', universityColor(d.id));
+    }
+
+    for (var i = 0; i < d.related_links.length; i++) {
+      d3.select('#' + d.related_links[i]).attr('stroke-width', link_width).attr('stroke', '#aaa').attr('opacity', 0.2);
+    }
+  }
+
+  // a compare function
   function createCompareFunction(propertyName) {
 
     return function(object1, object2) {
@@ -498,6 +515,7 @@ vis.mainview = function() {
     };
   }
 
+  // color for subject types
   function typeColor(d, flag) {
     if (d == 'ARTS') {
       return flag == 'outer' ? '#DCEBD8' : '#A6DB98';
@@ -512,6 +530,7 @@ vis.mainview = function() {
     }
   }
 
+  // color for bar charts
   function barColor(score, type) {
 
     var colorRange;
@@ -544,8 +563,9 @@ vis.mainview = function() {
 
   }
 
+  // color for inner nodes
   function universityColor(u) {
-    var uc = d3.scale.linear().domain([ 1, data.inner.length ]).range(colorbrewer.Set3[12]);
+    var uc = d3.scale.linear().domain([1, data.inner.length]).range(colorbrewer.Set3[12]);
     return uc(parseInt(u.slice(1, u.length)));
   }
 
