@@ -117,6 +117,7 @@ vis.overview = function() {
 
         data.forEach(function(point) {
           point['dataLabels'] = { enabled: false };
+          point['color'] = '#757575';
         });
 
         $('#overview').highcharts('Map', {
@@ -134,14 +135,14 @@ vis.overview = function() {
           series: [ {
             mapData: mapData,
             name: 'Basemap',
-            borderColor: '#A0A0A0',
-            nullColor: 'rgba(200, 200, 200, 0.3)',
+            borderColor: '#fff',
+            nullColor: '#8DCAC9',
             showInLegend: false
           }, {
             name: 'Separators',
             type: 'mapline',
             data: Highcharts.geojson(mapData, 'mapline'),
-            color: '#707070',
+            color: '#fff',
             showInLegend: false,
             enableMouseTracking: false
           }, {

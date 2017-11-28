@@ -86,6 +86,7 @@ vis.mainview = function() {
       //inner items
       innerItem = {
         id: 'i' + inner.length,
+        uid: d["id"],
         abbr: d['abbr'],
         university: d['university'],
         subjects: d['subjects'],
@@ -289,7 +290,9 @@ vis.mainview = function() {
 
     var inode = svg.append('g').selectAll('.inner_node').data(data.inner).enter().append('g').attr('class', 'inner_node').attr('transform', function(d, i) {
       return 'translate(' + d.x + ',' + d.y + ')';
-    }).on('mouseover', mouseoverInode).on('mouseout', mouseoutInode);
+    }).on('mouseover', mouseoverInode).on('mouseout', mouseoutInode).on("click", function(d){
+      mainview.dispatch.select(d.uid);
+    })
 
     inode.append('rect').attr('width', rect_width).attr('height', rect_height).attr('id', function(d) {
       return d.id;

@@ -6,7 +6,7 @@
 
 var mainview = vis.mainview();
 var overview = vis.overview();
-// var vview = vis.vview();
+var vview = vis.vview();
 var hview = vis.hview();
 
 // layout UI and setup events
@@ -61,6 +61,10 @@ function wire_views() {
     load('/vis/get_subject_scores', {
       scale: scale
     });
+  });
+
+  mainview.dispatch.on('select', function(id) {
+    vview.render(id);
   });
 
 }
