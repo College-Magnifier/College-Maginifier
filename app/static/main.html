@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>College Magnifier</title>
+  <link type="text/css" rel="stylesheet" href="lib/materialize/materialize.min.css" />
+  <link type="text/css" rel="stylesheet" href="lib/parcoords/d3.parcoords.css" />
+  <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+
+  <link type="text/css" rel="stylesheet" href="css/style.css" />
+</head>
+
+<body style="background: #a1bdc3;">
+  <nav style="background:#f9f9f9">
+    <div class="nav-wrapper">
+      <a href="index.html" class="brand-logo" style="color:#555"><img height="60px" style="padding:5px" src="images/v16.png"></a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li class="active"><a href="/main.html" style="color:#555">Visualization</a></li>
+        <li><a href="/data" style="color:#555">Data</a></li>
+        <li><a href="/about" style="color:#555">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="content row">
+    <div class="col s4">
+      <div class="row">
+        <div class="subpanel z-depth-5">
+          <div class="subpanel-title" style="background:#4c5e7d; border:none">
+            <i class="material-icons white-text">public</i>
+            <label class="white-text">Step 1 - Location Filter</label>
+          </div>
+          <div id="overview" style="background:#f9f9f9" class="subpanel-content"></div>
+          <a id="back-btn" class="waves-effect waves-light btn grey darken-1"><i class="material-icons">arrow_back</i></a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="subpanel z-depth-5">
+          <div class="subpanel-title"  style="background:#4c5e7d; border:none">
+            <i class="material-icons white-text">format_list_bulleted</i>
+            <label class="white-text">College Infomation</label>
+          </div>
+          <div id="vview" style="background:#f9f9f9" class="subpanel-content">
+            <div class="descriptions"></div>
+            <div class="white-text" id="wiki-credit">From Wikipedia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col s8">
+      <div class="row">
+        <div class="subpanel z-depth-5">
+          <div class="subpanel-title" style="background:#4c5e7d; border:none">
+            <i class="material-icons white-text">school</i>
+            <label class="white-text">Step 2 - Rank Filter</label>
+          </div>
+          <div id="hview" style="background:#f9f9f9" class="subpanel-content parcoords"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="subpanel z-depth-5">
+          <div class="subpanel-title" style="background:#4c5e7d; border:none">
+            <i class="material-icons white-text">multiline_chart</i>
+            <label class="white-text">Step 3 - Subject Magnifier</label>
+          </div>
+          <div id="mainview" style="background:#f9f9f9" class="subpanel-content"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="page-footer blue-grey darken-3">
+    <div class="footer-copyright">
+      <div class="container">
+        &copy; 2017 - College Magnifier
+      </div>
+    </div>
+  </footer>
+
+  <script type="text/javascript" src="lib/d3/d3.min.js"></script>
+  <script type="text/javascript" src="lib/jquery/jquery-1.10.1.min.js"></script>
+  <script type="text/javascript" src="lib/materialize/materialize.min.js"></script>
+  <script type="text/javascript" src="lib/highmaps/highmaps.src.js"></script>
+  <script type="text/javascript" src="lib/parcoords/d3.parcoords2.js"></script>
+  <script type="text/javascript" src="lib/colorbrewer/colorbrewer.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.6/proj4.js"></script>
+
+  <script src="https://code.highcharts.com/mapdata/custom/world-continents.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/asia.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/north-america.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/south-america.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/europe.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/africa.js"></script>
+  <script src="https://code.highcharts.com/mapdata/custom/oceania.js"></script>
+
+  <script src="https://code.highcharts.com/mapdata/countries/us/us-all.js"></script>
+  <script src="https://code.highcharts.com/mapdata/countries/ca/ca-all.js"></script>
+
+  <script src="https://code.highcharts.com/mapdata/countries/gb/gb-all.js"></script>
+  <script src="https://code.highcharts.com/mapdata/countries/nl/nl-all.js"></script>
+  <script src="https://code.highcharts.com/mapdata/countries/de/de-all.js"></script>
+
+  <script src="https://code.highcharts.com/mapdata/countries/cn/custom/cn-all-sar-taiwan.js"></script>
+  <script src="https://code.highcharts.com/mapdata/countries/jp/jp-all.js"></script>
+  <script src="https://code.highcharts.com/mapdata/countries/kr/kr-all.js"></script>
+
+  <script src="https://code.highcharts.com/mapdata/countries/au/au-all.js"></script>
+
+  <script type="text/javascript" src="js/vis.js"></script>
+  <script type="text/javascript" src="js/mainview.js"></script>
+  <script type="text/javascript" src="js/overview.js"></script>
+  <script type="text/javascript" src="js/hview.js"></script>
+  <script type="text/javascript" src="js/vview.js"></script>
+  <script type="text/javascript" src="js/driver.js"></script>
+</body>
+
+</html>
