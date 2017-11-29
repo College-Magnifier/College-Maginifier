@@ -1,3 +1,5 @@
+<img width="120" height="120px" src = "https://github.com/ForestCold/Images/blob/master/v18.png" >
+
 # College Magnifier
 A data visualization system for choosing the best universities
 
