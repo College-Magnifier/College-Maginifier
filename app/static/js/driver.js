@@ -39,6 +39,8 @@ function display() {
     ids: JSON.stringify(init)
   });
 
+  vview.render(66);
+
 }
 
 function wire_views() {

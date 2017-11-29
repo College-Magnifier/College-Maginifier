@@ -1,5 +1,5 @@
 /*
-  Show class information
+  Show college detail
   Author : Hanfei Lin
   Date: 10/14/2017
 */

@@ -1,5 +1,5 @@
 /*
-  Generate class dependencies graph
+  Generate map 
   Author : Hanfei Lin
   Date: 10/14/2017
 */

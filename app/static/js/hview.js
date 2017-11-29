@@ -1,5 +1,5 @@
 /*
-  Generate class dependencies graph
+  Parallel Coordinates
   Author : Hanfei Lin
   Date: 10/14/2017
 */
