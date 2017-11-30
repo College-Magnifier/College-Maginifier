@@ -5,6 +5,9 @@ Date: 10/14/2017
 body {
   margin: 0;
   padding: 0;
+  display: flex;
+min-height: 100vh;
+flex-direction: column;
 }
 
 nav .nav-wrapper {
@@ -18,6 +21,7 @@ body .content {
 footer.page-footer {
   padding: 0;
   text-align: center;
+    flex: 1 0 auto;
 }
 
 .subpanel {
@@ -322,7 +326,7 @@ text {
   background-size: cover;
   position: absolute;
   width: 100%;
-  height: 400px;
+  height: 60vh;
   margin-top: 3px;
   padding-bottom: 0px;
   z-index: -100;
