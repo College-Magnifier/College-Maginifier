@@ -5,17 +5,26 @@ A data visualization system for choosing the best universities
 
 ## Development
 
-  ### Environment Requirement 
+  ### Environment Requirement
   - Python 2.7
   - pip
-  
-  ### Install **flask**
-  
+
+  ### Deployment
+  - Heroku
+
+  ### Install Heroku Dev CLI
+
   ```bash
-  $ pip install -U flask
+  $ brew install heroku/brew/heroku
+  ```
+
+  ### Install **flask**
+
+  ```bash
+  $ pip install flask gunicorn
   ```
   ### Set up Web Server
 
   ```bash
-  $ python run.py
+  $ heroku
   ```

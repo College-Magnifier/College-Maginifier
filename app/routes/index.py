@@ -16,12 +16,20 @@ app.config['MYSQL_DATABASE_HOST'] = 'us-cdbr-iron-east-05.cleardb.net'
 debug = False
 
 @app.route('/')
-def root():
+def root_page():
     return app.send_static_file('index.html')
+
+@app.route('/visualization')
+def visualization_page():
+    return app.send_static_file('visualization.html')
 
 @app.route('/data')
 def data_page():
     return app.send_static_file('data.html')
+
+@app.route('/about')
+def about_page():
+    return app.send_static_file('about.html')
 
 @app.route('/get_school_descriptions')
 def get_school_descriptions():

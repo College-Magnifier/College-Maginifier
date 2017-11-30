@@ -5,9 +5,6 @@ Date: 10/14/2017
 body {
   margin: 0;
   padding: 0;
-  display: flex;
-min-height: 100vh;
-flex-direction: column;
 }
 
 nav .nav-wrapper {
@@ -312,30 +309,4 @@ text {
 .shadow {
   -webkit-box-shadow: 0 5px 5px 0 rgba(0,0,0,0.14), 0 5px 5px 0 rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
   box-shadow: 0 5px 5px 0 rgba(0,0,0,0.14), 0 5px 5px 0 rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
-}
-
-.icon-block {
-  padding: 0 15px;
-}
-.icon-block .material-icons {
-	font-size: inherit;
-}
-
-.index-background{
-  background-image: url('../images/background-1.png');
-  background-size: cover;
-  position: absolute;
-  width: 100%;
-  height: 60vh;
-  margin-top: 3px;
-  padding-bottom: 0px;
-  z-index: -100;
-}
-
-.blur {
-    -moz-filter: blur(2.5px);
-    -webkit-filter: blur(2.5px);
-    -o-filter: blur(2.5px);
-    -ms-filter: blur(2.5px);
-    filter: blur(2.5px);
 }
