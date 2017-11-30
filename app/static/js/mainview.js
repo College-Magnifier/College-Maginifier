@@ -12,7 +12,9 @@ vis.mainview = function() {
   var mainview = {},
     container = null,
     data = null,
-    size = [0, 0],
+    size = [
+      0, 0
+    ],
     margin = {
       left: 10,
       top: 10,
@@ -69,9 +71,9 @@ vis.mainview = function() {
   mainview.layout = function() {
 
     outer = d3.map(),
-      inner = [],
-      links = [],
-      subject = [];
+    inner = [],
+    links = [],
+    subject = [];
 
     size[0] = parseInt(container.style('width'));
     size[1] = parseInt(container.style('height'));
@@ -173,7 +175,7 @@ vis.mainview = function() {
     var ol = data.outer.length;
 
     //scale
-    inner_y = d3.scale.linear().domain([0, il]).range([-(il * rect_height) / 2,
+    inner_y = d3.scale.linear().domain([0, il]).range([ -(il * rect_height) / 2,
       il * rect_height / 2
     ]);
 
@@ -226,9 +228,9 @@ vis.mainview = function() {
     }).target(function(d) {
       return {
         'x': d.inner.y + rect_height / 2,
-        'y': d.outer.x > 180 ?
-          d.inner.x :
-          d.inner.x + rect_width
+        'y': d.outer.x > 180
+          ? d.inner.x
+          : d.inner.x + rect_width
       };
     }).projection(function(d) {
       return [d.y, d.x];
@@ -282,33 +284,33 @@ vis.mainview = function() {
     onode.append('text').attr('id', function(d) {
       return d.id + '-txt';
     }).attr('dy', '.31em').attr('text-anchor', function(d) {
-      return d.x < 180 ?
-        'start' :
-        'end';
+      return d.x < 180
+        ? 'start'
+        : 'end';
     }).attr('transform', function(d) {
-      return d.x < 180 ?
-        'translate(8)' :
-        'rotate(180)translate(-8)';
+      return d.x < 180
+        ? 'translate(14)'
+        : 'rotate(180)translate(-14)';
     }).text(function(d) {
       return d.name;
     });
+
+    onode.append('text').attr('id', function(d) {
+      return d.id + '-score';
+    }).attr('transform', function(d) {
+      return d.x < 180
+        ? 'translate(8)'
+        : 'rotate(180)translate(-8)';
+    }).text(function(d) {
+      return "0";
+    }).style("font-size", 12)
+    .attr("visibility", "hidden");
 
     // inner nodes
 
     var inode = svg.append('g').selectAll('.inner_node').data(data.inner).enter().append('g').attr('class', 'inner_node').attr('transform', function(d, i) {
       return 'translate(' + d.x + ',' + d.y + ')';
-    }).on('mouseover', mouseoverInode).on('mouseout', mouseoutInode).on("click", function(d) {
-      container.selectAll("*").classed("selected", false);
-      for (var node in data.inner){
-        if (data.inner[node].uid != d.uid){
-          data.inner[node].selected = false;
-        }
-      }
-
-      d.selected = d.selected ? false : true;
-      container.select("#" + d.id).classed("selected", d.selected);
-      mainview.dispatch.select(d.uid);
-    })
+    }).on('mouseover', mouseoverInode).on('mouseout', mouseoutInode).on("click", clickInode)
 
     inode.append('rect').attr('width', rect_width).attr('height', rect_height).attr('id', function(d) {
       return d.id;
@@ -371,6 +373,53 @@ vis.mainview = function() {
 
   // When mouseover outside nodes
   function mouseoverOnode(d) {
+
+    var iScore = findScore(d, selectedINode());
+    if (iScore) {
+      if (iScore != "hasSelected") {
+        container.selectAll('.outer_node').sort(function(a, b) {
+          return (a.id == d.id
+            ? 1
+            : 0);
+        });
+        container.select("#" + d.id).attr("r", 15);
+        container.select('#' + d.id + '-score').attr('visibility', "visible").text(iScore);
+      }
+
+    for (var i = 0; i < d.related_nodes.length; i++) {
+      //update barchart
+      if (!d.abbr) {
+
+        var inner = data.inner[d.related_nodes[i].slice(1, d.related_nodes[i].length)];
+        var score = 0;
+        if (inner) {
+          for (var item in inner['subjects']) {
+            if (inner['subjects'][item]['subject'] == d.name) {
+              score = inner['subjects'][item]['score'];
+            }
+          }
+        }
+
+        container.select('#b' + d.related_nodes[i]).attr('opacity', 0.6).transition().duration(500).ease('linear').attr('width', bar_x(score)).attr('fill', barColor(score, d.type));
+      }
+      container.select('#t' + d.related_nodes[i]).transition().duration(500).text(score).style('opacity', 1);
+    }
+
+    container.select('.axis').classed('highlight', true);
+    container.select('.title').text(d.name).style('opacity', 1);
+
+      return;
+    }
+
+    for (var node in data.inner) {
+      if (data.inner[node].selected) {
+        for (var i = 0; i < data.inner[node].related_links.length; i++) {
+          container.select('#' + data.inner[node].related_links[i]).attr('stroke-width', '1.5px').attr('stroke', function(d) {
+            return typeColor(d['outer']['type'], 'link');
+          }).attr('opacity', 0.5);
+        }
+      }
+    }
     // bring to front
     container.selectAll('.links .link').sort(function(a, b) {
       return d.related_links.indexOf(a.id);
@@ -419,10 +468,25 @@ vis.mainview = function() {
         return typeColor(d['outer']['type'], 'link');
       }).attr('opacity', 1);
     }
+
   }
 
   // When mouseover inside nodes
   function mouseoverInode(d) {
+
+    for (var node in data.inner) {
+      if (data.inner[node].selected) {
+        for (var i = 0; i < data.inner[node].related_links.length; i++) {
+          container.select('#' + data.inner[node].related_links[i]).attr('stroke-width', '1.5px').attr('stroke', function(d) {
+            return typeColor(d['outer']['type'], 'link');
+          }).attr('opacity', 0.5);
+        }
+        for (var i = 0; i < data.inner[node].related_nodes.length; i++) {
+          container.select('#' + data.inner[node].related_nodes[i]).classed('highlight',false).attr('fill', '#A7B2B8');
+          container.select('#' + data.inner[node].related_nodes[i] + '-txt').attr('fill', null).attr('font-weight', 'normal');
+        }
+      }
+    }
     // bring to front
     container.selectAll('.links .link').sort(function(a, b) {
       return d.related_links.indexOf(a.id);
@@ -454,6 +518,30 @@ vis.mainview = function() {
 
   // When mouseout outside nodes
   function mouseoutOnode(d) {
+
+    container.select("#" + d.id).attr("r", 4.5);
+    container.select('#' + d.id + '-score').attr('visibility', "hidden");
+
+    if (findScore(d, selectedINode())) {
+      for (var i = 0; i < d.related_nodes.length; i++) {
+      container.select('#b' + d.related_nodes[i]).classed('highlight', false);
+      container.select('#b' + d.related_nodes[i]).transition().duration(200).ease('linear').attr('opacity', 0);
+      container.select('#t' + d.related_nodes[i]).transition().duration(200).style('opacity', 0);
+}
+      container.select('.title').style('opacity', 0);
+      container.select('.axis').classed('highlight', false);
+      return;
+    }
+
+    for (var node in data.inner) {
+      if (data.inner[node].selected) {
+        for (var i = 0; i < data.inner[node].related_links.length; i++) {
+          container.select('#' + data.inner[node].related_links[i]).attr('stroke-width', '3px').attr('stroke', function(d) {
+            return typeColor(d['outer']['type'], 'link');
+          }).attr('opacity', 1);
+        }
+      }
+    }
     for (var i = 0; i < d.related_nodes.length; i++) {
       container.select('#' + d.related_nodes[i]).classed('highlight', false);
       container.select('#b' + d.related_nodes[i]).classed('highlight', false);
@@ -478,6 +566,11 @@ vis.mainview = function() {
 
   // When mouseout inside nodes
   function mouseoutInode(d) {
+
+    if (d.selected) {
+      return;
+    }
+
     for (var i = 0; i < d.related_nodes.length; i++) {
       container.select('#' + d.related_nodes[i]).classed('highlight', false);
       container.select('#b' + d.related_nodes[i]).classed('highlight', false);
@@ -495,6 +588,50 @@ vis.mainview = function() {
 
     for (var i = 0; i < d.related_links.length; i++) {
       d3.select('#' + d.related_links[i]).attr('stroke-width', link_width).attr('stroke', '#aaa').attr('opacity', 0.2);
+    }
+
+    for (var node in data.inner) {
+      if (data.inner[node].selected) {
+        for (var i = 0; i < data.inner[node].related_links.length; i++) {
+          container.select('#' + data.inner[node].related_links[i]).attr('stroke-width', '3px').attr('stroke', function(d) {
+            return typeColor(d['outer']['type'], 'link');
+          }).attr('opacity', 1);
+          for (var j = 0; j < data.inner[node].related_nodes.length; j++) {
+            container.select('#' + data.inner[node].related_nodes[j]).attr('opacity', 1).attr('fill', function(d) {
+              if (!d.abbr) {
+                return typeColor(d.type, 'link');
+              } else {
+                return '#9cd2ff';
+              }
+            });
+            container.select('#' + data.inner[node].related_nodes[j] + '-txt').attr('font-weight', 'bold').attr('fill', function(d) {
+              if (!d.abbr) {
+                return typeColor(d.type, 'link');
+              }
+            });
+          }
+        }
+      }
+    }
+  }
+
+  function clickInode(d) {
+    container.selectAll("*").classed("selected", false);
+    for (var node in data.inner) {
+      if (data.inner[node].uid != d.uid) {
+        data.inner[node].selected = false;
+        mouseoutInode(data.inner[node]);
+      }
+    }
+
+    d.selected = d.selected
+      ? false
+      : true;
+    container.select("#" + d.id).classed("selected", d.selected);
+    mainview.dispatch.select(d.uid);
+
+    if (d.selected) {
+      mouseoverInode(d);
     }
   }
 
@@ -518,15 +655,25 @@ vis.mainview = function() {
   // color for subject types
   function typeColor(d, flag) {
     if (d == 'ARTS') {
-      return flag == 'outer' ? '#DCEBD8' : '#A6DB98';
+      return flag == 'outer'
+        ? '#DCEBD8'
+        : '#A6DB98';
     } else if (d == 'ENG') {
-      return flag == 'outer' ? '#FEEFDE' : '#FCDF9A';
+      return flag == 'outer'
+        ? '#FEEFDE'
+        : '#FCDF9A';
     } else if (d == 'LIFE SCI') {
-      return flag == 'outer' ? '#D7E4EF' : '#8EC0EE';
+      return flag == 'outer'
+        ? '#D7E4EF'
+        : '#8EC0EE';
     } else if (d == 'NATURAL') {
-      return flag == 'outer' ? '#FCE7E5' : '#F9B8A9';
+      return flag == 'outer'
+        ? '#FCE7E5'
+        : '#F9B8A9';
     } else {
-      return flag == 'outer' ? '#EEECFC' : '#BEB6E0';
+      return flag == 'outer'
+        ? '#EEECFC'
+        : '#BEB6E0';
     }
   }
 
@@ -567,6 +714,30 @@ vis.mainview = function() {
   function universityColor(u) {
     var uc = d3.scale.linear().domain([1, data.inner.length]).range(colorbrewer.Set3[12]);
     return uc(parseInt(u.slice(1, u.length)));
+  }
+
+  function selectedINode() {
+    for (var node in data.inner) {
+      if (data.inner[node].selected) {
+        return data.inner[node];
+      }
+    }
+    return null;
+  }
+
+  function findScore(oNode, iNode) {
+
+    if (!iNode) {
+      return null;
+    }
+
+    for (var i in iNode.subjects) {
+      if (iNode.subjects[i].subject == oNode.name) {
+        return iNode.subjects[i].score;
+      }
+    }
+
+    return "hasSelected";
   }
 
   return mainview;
