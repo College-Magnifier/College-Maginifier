@@ -17,11 +17,12 @@ footer.page-footer {
 .about-content-block .introduction-part {
   display: flex;
   align-items: center;
-  margin: 15px 0;
+  margin: 20px 0;
 }
 
 .about-content-block .introduction-part .avatar {
   margin: 0 50px;
+  opacity: 0;
 }
 
 .about-content-block .introduction-part .avatar img {
@@ -38,6 +39,15 @@ footer.page-footer {
   position: relative;
   background: #fff;
   width: 550px;
+  opacity: 0;
+  z-index: -1;
+}
+
+.flex-left .introduction {
+  left: -200px;
+}
+.flex-right .introduction {
+  right: -200px;
 }
 
 .about-content-block .introduction-part.flex-left .introduction:before {
