@@ -77,7 +77,7 @@ footer.page-footer {
   position: absolute;
   height: 0;
   width: 0;
-  top: 110px;
+  top: 70px;
   border: 20px solid;
   right: -40px;
   border-color: transparent transparent #f9f9f9 #f9f9f9;
@@ -88,7 +88,7 @@ footer.page-footer {
   position: absolute;
   height: 0;
   width: 0;
-  top: 117px;
+  top: 70px;
   border: 14px solid;
   right: -28px;
   border-color: transparent transparent #f9f9f9 #f9f9f9;
