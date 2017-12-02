@@ -1,5 +1,5 @@
 /*
-  Generate map 
+  Generate map
   Author : Hanfei Lin
   Date: 10/14/2017
 */
@@ -113,14 +113,14 @@ vis.overview = function() {
       url: '/map_data/school_coordinates',
       data: { scale: scale },
       success: function(resp) {
-        data = JSON.parse(resp);
+        coordData = JSON.parse(resp);
 
-        data.forEach(function(point) {
+        coordData.forEach(function(point) {
           point['dataLabels'] = { enabled: false };
           point['color'] = '#757575';
         });
 
-        $('#overview').highcharts('Map', {
+        coordMapOption = {
           title: { text: '' },
           mapNavigation: {
             enabled: true,
@@ -149,13 +149,14 @@ vis.overview = function() {
             type: 'mappoint',
             name: 'Colleges',
             color: Highcharts.getOptions().colors[1],
-            data: data
+            data: coordData
           } ],
 
           credits: {
             enabled: false
           }
-        });
+        };
+        coordMap = Highcharts.mapChart('overview', coordMapOption);
       }
     });
   }
@@ -235,4 +236,13 @@ vis.overview = function() {
 
   renderMap('world-continents');
   return overview;
+};
+
+updatePoints = function(ids) {
+  coordData.forEach(function(point) {
+    if (ids.indexOf(point['id']) != -1) {
+      point['color'] = '#9c27b0';
+    }
+  });
+  Highcharts.mapChart('overview', coordMap.options);
 };

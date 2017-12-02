@@ -100,7 +100,7 @@ def get_school_coordinates():
 
     conn = mysql.connect()
     cursor = conn.cursor()
-    sql = 'SELECT `university` as `name`, `latitude` as `lat`, `longitude` as `lon` FROM university_geo WHERE `country_code`="{}"'.format(country_code)
+    sql = 'SELECT `id` as `id`, `university` as `name`, `latitude` as `lat`, `longitude` as `lon` FROM university_geo WHERE `country_code`="{}"'.format(country_code)
 
     if map_scale == 'china':
         sql += ' OR `country_code`="tw"'
