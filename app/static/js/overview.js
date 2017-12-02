@@ -3,6 +3,8 @@
   Author : Hanfei Lin
   Date: 10/14/2017
 */
+var coordData = null;
+
 vis.overview = function() {
   var overview = {};
   var dispatch = d3.dispatch('select', 'mouseover', 'mouseout');
@@ -239,10 +241,11 @@ vis.overview = function() {
 };
 
 updatePoints = function(ids) {
+  if (!coordData) {
+    return;
+  }
   coordData.forEach(function(point) {
-    if (ids.indexOf(point['id']) != -1) {
-      point['color'] = '#9c27b0';
-    }
+    point['color'] = ids.indexOf(point['id']) != -1 ? '#9c27b0' : '#757575';
   });
-  Highcharts.mapChart('overview', coordMap.options);
+  coordMap = Highcharts.mapChart('overview', coordMap.options);
 };

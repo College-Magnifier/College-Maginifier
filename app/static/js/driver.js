@@ -48,6 +48,10 @@ function wire_views() {
   hview.dispatch.on('select', function(selected) {
     d3.select('#mainview').selectAll('*').remove();
 
+    console.log(selected)
+
+    updatePoints(selected);
+
     if (selected.length == 0) {
       selected = selectedIdByMap;
     }

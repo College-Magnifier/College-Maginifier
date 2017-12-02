@@ -73,10 +73,12 @@ vis.hview = function() {
 
           selected = [];
 
+          if (items.length != data.length){
           for (i in items) {
             selected.push(items[i].id);
           }
-
+        }
+        
           hview.dispatch.select(selected);
         })
         .reorderable()
