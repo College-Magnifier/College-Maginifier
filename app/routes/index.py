@@ -150,6 +150,8 @@ def get_subject_scores():
         if map_scale != 'world-continents':
             if map_scale in ['asia', 'north-america', 'south-america', 'europe', 'africa', 'oceania']:
                 region_condition = 'id IN (SELECT id FROM university_geo WHERE `continent_code`="{}")'.format(continent_name)
+            elif map_scale == 'china':
+                region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="cn" OR `country_code`="tw")'
             else:
                 region_condition = 'id IN (SELECT id FROM university_geo WHERE `country_code`="{}")'.format(country_code)
 
