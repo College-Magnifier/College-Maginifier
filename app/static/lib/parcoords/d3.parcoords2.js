@@ -353,7 +353,11 @@ pc.applyDimensionDefaults = function(dims) {
 
 pc.getOrderedDimensionKeys = function(){
 	return d3.keys(__.dimensions).sort(function(x, y){
-		return d3.ascending(__.dimensions[x].index, __.dimensions[y].index);
+    if (x == "OVERALL"){ return -1;}
+    else {
+return 1;
+    }
+		// return d3.ascending(__.dimensions[x].index, __.dimensions[y].index);
 	});
 };
 

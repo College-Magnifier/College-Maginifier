@@ -61,7 +61,7 @@ vis.hview = function() {
 
     parcoords
         .data(data)
-        .hideAxis([ 'university', 'id' ])
+        .hideAxis(['university', 'id'])
         .rate(150)
         .composite('darker')
         .mode('queue')
@@ -70,18 +70,14 @@ vis.hview = function() {
         .reorderable()
         .brushMode('1D-axes')
         .on('brushend', function(items) {
-
           selected = [];
-
           if (items.length != data.length){
           for (i in items) {
             selected.push(items[i].id);
           }
         }
-        
           hview.dispatch.select(selected);
         })
-        .reorderable()
         .interactive();
 
     return hview.update();

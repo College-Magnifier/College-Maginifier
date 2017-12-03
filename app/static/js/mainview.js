@@ -239,7 +239,7 @@ vis.mainview = function() {
     var svg = container.append('svg').attr('width', size[0] - margin.left - margin.right).attr('height', diameter).append('g').attr('transform', 'translate(' + (diameter / 2 + 80) + ',' + diameter / 2 + ')');
 
     //arc
-    var arcPath = d3.svg.arc().innerRadius(200).outerRadius(220);
+    var arcPath = d3.svg.arc().innerRadius(170).outerRadius(220);
 
     var arcData = [];
     var lastStart = 10 / 9 * Math.PI;
@@ -261,6 +261,15 @@ vis.mainview = function() {
     }).attr('fill', function(d) {
       return typeColor(d['name'], 'outer');
     });
+
+    var arcText = svg.append('g').selectAll('text').data(arcData).enter().append("text")
+    .attr("transform", function(d, i, j) {//calculating the d as done in the path
+   var angle =  ((d.endAngle * 180 / Math.PI) - (d.startAngle * 180 / Math.PI)) / 2 + d.startAngle * 180 / Math.PI;
+   var textWidth = 9.27 * d.name.length;
+   return "translate(" + (arcPath.centroid(d)[0] - textWidth / 2) + "," + (arcPath.centroid(d)[1] + 8) + ")rotate(" + angle + "," + (textWidth / 2) + "," + (-8) + ")";
+ }).text(function(d){
+   return d.name;
+ })
 
     // links
     var link = svg.append('g').attr('class', 'links').selectAll('.link').data(data.links).enter().append('path').attr('class', 'link').attr('id', function(d) {
