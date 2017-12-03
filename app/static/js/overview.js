@@ -29,6 +29,7 @@ vis.overview = function() {
           colorAxis: {
             min: 0
           },
+          chart: { backgroundColor: '#f9f9f9' },
           series: [ {
             data: data,
             mapData: mapData,
@@ -100,10 +101,7 @@ vis.overview = function() {
               }
             }
           } ],
-
-          credits: {
-            enabled: false
-          }
+          credits: { enabled: false }
         });
       }
     });
@@ -130,6 +128,7 @@ vis.overview = function() {
               verticalAlign: 'bottom'
             }
           },
+          chart: { backgroundColor: '#f9f9f9' },
           tooltip: {
             headerFormat: '',
             pointFormat: '<b>{point.name}</b>'
@@ -153,10 +152,7 @@ vis.overview = function() {
             color: Highcharts.getOptions().colors[1],
             data: coordData
           } ],
-
-          credits: {
-            enabled: false
-          }
+          credits: { enabled: false }
         };
         coordMap = Highcharts.mapChart('overview', coordMapOption);
       }
