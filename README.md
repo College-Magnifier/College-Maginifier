@@ -1,7 +1,12 @@
-<img width="120" height="120px" src = "https://github.com/ForestCold/Images/blob/master/v18.png" >
-
 # College Magnifier
-A data visualization system for choosing the best universities
+
+A data visualization system for choosing the best universities.
+
+<img src = "./doc/logo.png" width="120" height="120px" align="middle">
+
+## Screenshot
+
+![homepage](./doc/homepage.png)
 
 ## Development
 
@@ -28,3 +33,5 @@ A data visualization system for choosing the best universities
   ```bash
   $ heroku
   ```
+
+
