@@ -2,6 +2,8 @@
 
 A data visualization system for choosing the best universities.
 
+__Try it out! [http://www.college-magnifier.world/](http://www.college-magnifier.world/)__
+
 <img src = "./doc/logo.png" width="120" height="120px" align="middle">
 
 ## Screenshot
